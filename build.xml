@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<project name="Toper" basedir="." default="test">
+
+    <target name="build">
+        <phingcall target="code-sniffer"/>
+        <phingcall target="test"/>
+    </target>
+
+    <target name="test">
+        <phpunit haltonfailure="true" printsummary="true">
+            <batchtest>
+                <fileset dir="${phing.dir}/tests">
+                    <include name="**/*Test.php"/>
+                </fileset>
+            </batchtest>
+        </phpunit>
+    </target>
+
+    <target name="code-sniffer">
+        <exec command="vendor/bin/phpcs --standard=PSR2 ${phing.dir}/src" escape="false" logoutput="true" checkreturn="true"/>
+    </target>
+</project>
