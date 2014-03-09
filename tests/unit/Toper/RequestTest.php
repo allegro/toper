@@ -9,7 +9,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 {
     const URL = "/test";
 
-    const BASE_URL = "http://123:123:123:123";
+    const BASE_URL = "http://123.123.123.123";
 
     /**
      * @var GuzzleClient | \PHPUnit_Framework_MockObject_MockObject

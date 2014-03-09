@@ -4,8 +4,8 @@ namespace Toper;
 
 class SimpleHostPoolTest extends \PHPUnit_Framework_TestCase
 {
-    const HOST_1 = "http://123:232:232:123";
-    const HOST_2 = "http://222:232:232:123";
+    const HOST_1 = "http://123.232.232.123";
+    const HOST_2 = "http://222.232.232.123";
 
     /**
      * @test
