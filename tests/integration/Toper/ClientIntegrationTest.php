@@ -8,6 +8,8 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
 
     const HOST2 = "http://localhost:7850";
 
+    const HOST3 = "http://localhost:7800";
+
     /**
      * @test
      */
@@ -44,7 +46,7 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldCallNextHostIfFirstFailed()
     {
-        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST2, self::HOST1));
+        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST2, self::HOST2, self::HOST1));
         $client = new Client($hostPoolProvider, new GuzzleClientFactory());
 
         $request = $client->get("/request");
