@@ -3,10 +3,9 @@
 namespace Toper;
 
 use Guzzle\Http\Client as GuzzleClient;
-use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\Request as GuzzleRequest;
-use Guzzle\Http\Message\Response;
+use Guzzle\Http\Message\Response as GuzzleResponse;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,7 +37,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             array($guzzleClient)
         );
 
-        $guzzleResponse = new Response(200, array(), 'ok');
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
 
         $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
 
@@ -51,7 +50,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->returnValue($guzzleResponse);
 
         $instance = $this->createInstance(
-            $guzzleClientFactory
+            Request::GET, $guzzleClientFactory
         );
         $response = $instance->send();
 
@@ -72,12 +71,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             array($guzzleClient1, $guzzleClient2)
         );
 
-        $e = new ServerErrorResponseException();
+        $e = $this->createGuzzleServerErrorResponseException();
         $guzzleClient1->expects($this->any())
             ->method('get')
             ->will($this->throwException($e));
 
-        $guzzleResponse = new Response(200, array(), 'ok');
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
 
         $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
 
@@ -86,7 +85,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->with(self::URL)
             ->will($this->returnValue($guzzleRequest));
 
-        $instance = $this->createInstance($guzzleClientFactory);
+        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
         $response = $instance->send();
 
         $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
@@ -106,7 +105,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             array($guzzleClient1, $guzzleClient2)
         );
 
-        $e = new ServerErrorResponseException();
+        $e = $this->createGuzzleServerErrorResponseException();
         $guzzleClient1->expects($this->any())
             ->method('get')
             ->will($this->throwException($e));
@@ -116,7 +115,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->with(self::URL)
             ->will($this->throwException($e));
 
-        $instance = $this->createInstance($guzzleClientFactory);
+        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
 
         $this->setExpectedException('Toper\Exception\ServerException');
 
@@ -124,14 +123,15 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $method
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      *
      * @return Request
      */
-    private function createInstance(GuzzleClientFactoryInterface $guzzleClientFactory)
+    private function createInstance($method, GuzzleClientFactoryInterface $guzzleClientFactory)
     {
         return new Request(
-            self::URL, $this->hostPool, $guzzleClientFactory
+            $method, self::URL, $this->hostPool, $guzzleClientFactory
         );
     }
 
@@ -155,10 +155,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Response $guzzleResponse
+     * @param GuzzleResponse $guzzleResponse
      * @return GuzzleRequest
      */
-    private function createGuzzleRequest(Response $guzzleResponse)
+    private function createGuzzleRequest(GuzzleResponse $guzzleResponse)
     {
 
         $guzzleRequest = $this->getMockBuilder('Guzzle\Http\Message\Request')
@@ -170,5 +170,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($guzzleResponse));
 
         return $guzzleRequest;
+    }
+
+    /**
+     * @return ServerErrorResponseException
+     */
+    private function createGuzzleServerErrorResponseException()
+    {
+        $e = new ServerErrorResponseException();
+        $response = new GuzzleResponse(500);
+        $e->setResponse($response);
+
+        return $e;
     }
 }

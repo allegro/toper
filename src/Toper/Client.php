@@ -37,6 +37,22 @@ class Client implements ClientInterface
     public function get($url)
     {
         return new Request(
+            Request::GET,
+            $url,
+            $this->hostPoolProvider->get(),
+            $this->guzzleClientFactory
+        );
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return Request
+     */
+    public function post($url)
+    {
+        return new Request(
+            Request::POST,
             $url,
             $this->hostPoolProvider->get(),
             $this->guzzleClientFactory

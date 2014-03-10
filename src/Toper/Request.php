@@ -2,12 +2,16 @@
 
 namespace Toper;
 
-use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
 use Toper\Exception\ServerException;
+use \Guzzle\Http\Message\Request as GuzzleRequest;
 
 class Request
 {
+    const GET = "get";
+
+    const POST = "post";
+
     /**
      * @var HostPoolInterface
      */
@@ -19,23 +23,56 @@ class Request
     private $url;
 
     /**
+     * @var string
+     */
+    private $method;
+
+    /**
      * @var GuzzleClientFactoryInterface
      */
     private $guzzleClientFactory;
 
     /**
+     * @param string $method
      * @param string $url
      * @param HostPoolInterface $hostPool
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      */
     public function __construct(
+        $method,
         $url,
         HostPoolInterface $hostPool,
         GuzzleClientFactoryInterface $guzzleClientFactory
     ) {
+        $this->method = $method;
         $this->hostPool = $hostPool;
         $this->url = $url;
         $this->guzzleClientFactory = $guzzleClientFactory;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return HostPoolInterface
+     */
+    public function getHostPool()
+    {
+        return $this->hostPool;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
     }
 
     /**
@@ -54,30 +91,20 @@ class Request
                     array()
                 );
 
-                $guzzleRequest = $guzzleClient->get($this->url);
+                /** @var GuzzleRequest $guzzleRequest */
+                $guzzleRequest = $guzzleClient->{$this->method}($this->url);
 
                 return new Response($guzzleRequest->send());
             } catch (ServerErrorResponseException $e) {
-                $exception = new ServerException($e->getMessage(), $e->getCode(), $e);
+                $exception = new ServerException(
+                    new Response($e->getResponse()),
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e
+                );
             }
         }
 
         throw $exception;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * @return HostPoolInterface
-     */
-    public function getHostPool()
-    {
-        return $this->hostPool;
     }
 }

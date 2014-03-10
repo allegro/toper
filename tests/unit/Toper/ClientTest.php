@@ -34,7 +34,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function shouldGetCreateRequest()
+    public function shouldGetCreateGetRequest()
     {
         $url = "/test";
         $client = $this->createClient();
@@ -42,6 +42,22 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($url, $request->getUrl());
         $this->assertEquals($this->hostPool, $request->getHostPool());
+        $this->assertEquals(Request::GET, $request->getMethod());
+    }
+
+
+    /**
+     * @test
+     */
+    public function shouldPostCreatePostRequest()
+    {
+        $url = "/test";
+        $client = $this->createClient();
+        $request = $client->post($url);
+
+        $this->assertEquals($url, $request->getUrl());
+        $this->assertEquals($this->hostPool, $request->getHostPool());
+        $this->assertEquals(Request::POST, $request->getMethod());
     }
 
     /**
