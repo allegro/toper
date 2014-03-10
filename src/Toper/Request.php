@@ -2,7 +2,6 @@
 
 namespace Toper;
 
-use Guzzle\Http\Client as GuzzleClient;
 use Guzzle\Http\Exception\CurlException;
 use Toper\Exception\ServerException;
 
