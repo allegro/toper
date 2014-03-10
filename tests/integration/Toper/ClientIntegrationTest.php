@@ -21,10 +21,10 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldCallByGetMethod()
     {
-        $request = $this->client->get("/ok");
+        $request = $this->client->get("/code/200");
 
         $response = $request->send();
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('ok', $response->getBody());
+        $this->assertEquals('200', $response->getBody());
     }
 } 

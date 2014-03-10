@@ -2,9 +2,12 @@ var http = require('http');
 
 var server = http.createServer(function(req, res) {
     console.log(req.url);
-    if(req.url == '/ok') {
-        res.writeHead(200);
-        res.end("ok");
+    var codePattern = new RegExp(/^\/code\/(.*)$/);
+    var matches = req.url.match(codePattern);
+
+    if(matches != null) {
+        res.writeHead(matches[1]);
+        res.end(matches[1]);
     }
 
     res.writeHead(404);
