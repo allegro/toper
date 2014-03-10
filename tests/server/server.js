@@ -1,23 +1,19 @@
 var http = require('http');
 
-http.createServer(function(req, res) {
-    console.log(req.url);
-    var codePattern = new RegExp(/^\/code\/([0-9]+)/);
-    var matches = req.url.match(codePattern);
+codes = {
+    200: {port: 7820, message: "ok"},
+    500: {port: 7850, message: "internal error"},
+    404: {port: 7844, message: "not found"}
+};
 
-    if(matches != null) {
-        res.writeHead(matches[1]);
-        res.end(matches[1]);
-    }
+for (var code in codes) {
+    console.log("start server on port: " + codes[code].port);
+    createServer(code);
+}
 
-    res.writeHead(404);
-    res.end("Not found.")
-}).listen(7878);
-
-http.createServer(function(req, res) {
-    console.log(req.url);
-
-
-    res.writeHead(500);
-    res.end("Internal server error.")
-}).listen(7850);
+function createServer(code) {
+    http.createServer(function (req, res) {
+        res.writeHead(code);
+        res.end(codes[code].message)
+    }).listen(codes[code].port);
+}
