@@ -3,6 +3,8 @@
 namespace Toper;
 
 use Guzzle\Http\Client as GuzzleClient;
+use Guzzle\Http\Exception\CurlException;
+use Toper\Exception\ServerException;
 
 class Request
 {
@@ -37,23 +39,30 @@ class Request
     }
 
     /**
+     * @throws Exception\ServerException
+     *
      * @return Response
      */
     public function send()
     {
+        $exception = null;
         while ($this->hostPool->hasNext()) {
-            $host = $this->hostPool->getNext();
-            $guzzleClient = $this->guzzleClientFactory->create(
-                $host,
-                array()
-            );
+            try {
+                $host = $this->hostPool->getNext();
+                $guzzleClient = $this->guzzleClientFactory->create(
+                    $host,
+                    array()
+                );
 
-            $guzzleRequest = $guzzleClient->get($this->url);
+                $guzzleRequest = $guzzleClient->get($this->url);
 
-            return new Response($guzzleRequest->send());
+                return new Response($guzzleRequest->send());
+            } catch (CurlException $e) {
+                $exception = new ServerException($e->getMessage(), $e->getCode(), $e);
+            }
         }
 
-        return null;
+        throw $exception;
     }
 
     /**

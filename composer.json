@@ -16,6 +16,6 @@
         "phing/phing": "dev-master"
     },
     "autoload": {
-        "psr-4": {"Toper\\": "src/Toper"}
+        "psr-4": {"Toper\\": ["src/Toper", "tests/unit/Toper"]}
     }
 }
