@@ -3,6 +3,7 @@
 namespace Toper;
 
 use Guzzle\Http\Exception\ServerErrorResponseException;
+use Guzzle\Http\Message\EntityEnclosingRequest;
 use Toper\Exception\ServerException;
 use \Guzzle\Http\Message\Request as GuzzleRequest;
 
@@ -31,6 +32,11 @@ class Request
      * @var GuzzleClientFactoryInterface
      */
     private $guzzleClientFactory;
+
+    /**
+     * @var string
+     */
+    private $body;
 
     /**
      * @param string $method
@@ -76,6 +82,14 @@ class Request
     }
 
     /**
+     * @param string $body
+     */
+    public function setBod($body)
+    {
+        $this->body = $body;
+    }
+
+    /**
      * @throws Exception\ServerException
      *
      * @return Response
@@ -93,6 +107,11 @@ class Request
 
                 /** @var GuzzleRequest $guzzleRequest */
                 $guzzleRequest = $guzzleClient->{$this->method}($this->url);
+                //TODO write unit tests
+                if ($this->body && $guzzleRequest instanceof EntityEnclosingRequest) {
+                    /** @var EntityEnclosingRequest $guzzleRequest */
+                    $guzzleRequest->setBody($this->body);
+                }
 
                 return new Response($guzzleRequest->send());
             } catch (ServerErrorResponseException $e) {
