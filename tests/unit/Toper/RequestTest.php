@@ -4,6 +4,7 @@ namespace Toper;
 
 use Guzzle\Http\Client as GuzzleClient;
 use Guzzle\Http\Exception\CurlException;
+use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use Guzzle\Http\Message\Response;
 
@@ -61,7 +62,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function shouldCatchCurlExceptionAndCallNextHost()
+    public function shouldCatchServerErrorExceptionAndCallNextHost()
     {
         $guzzleClient1 = $this->createGuzzleClientMock();
         $guzzleClient2 = $this->createGuzzleClientMock();
@@ -71,7 +72,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             array($guzzleClient1, $guzzleClient2)
         );
 
-        $e = new CurlException();
+        $e = new ServerErrorResponseException();
         $guzzleClient1->expects($this->any())
             ->method('get')
             ->will($this->throwException($e));
@@ -105,7 +106,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             array($guzzleClient1, $guzzleClient2)
         );
 
-        $e = new CurlException();
+        $e = new ServerErrorResponseException();
         $guzzleClient1->expects($this->any())
             ->method('get')
             ->will($this->throwException($e));

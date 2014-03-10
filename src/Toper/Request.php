@@ -3,6 +3,7 @@
 namespace Toper;
 
 use Guzzle\Http\Exception\CurlException;
+use Guzzle\Http\Exception\ServerErrorResponseException;
 use Toper\Exception\ServerException;
 
 class Request
@@ -56,7 +57,7 @@ class Request
                 $guzzleRequest = $guzzleClient->get($this->url);
 
                 return new Response($guzzleRequest->send());
-            } catch (CurlException $e) {
+            } catch (ServerErrorResponseException $e) {
                 $exception = new ServerException($e->getMessage(), $e->getCode(), $e);
             }
         }

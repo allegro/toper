@@ -2,12 +2,12 @@
 
 namespace Toper;
 
-use Guzzle\Http\Client;
+use Guzzle\Http\Client as GuzzleClient;
 
 class GuzzleClientFactoryStub implements GuzzleClientFactoryInterface
 {
     /**
-     * @var Client[]
+     * @var GuzzleClient[]
      */
     private $guzzleClients;
 
@@ -27,6 +27,8 @@ class GuzzleClientFactoryStub implements GuzzleClientFactoryInterface
     /**
      * @param string $host
      * @param array $options
+     *
+     * @return GuzzleClient
      */
     public function create($host, array $options)
     {
