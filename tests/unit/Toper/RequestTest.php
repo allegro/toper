@@ -4,6 +4,7 @@ namespace Toper;
 
 use Guzzle\Http\Client as GuzzleClient;
 use Guzzle\Http\Exception\ServerErrorResponseException;
+use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use Guzzle\Http\Message\Response as GuzzleResponse;
 
@@ -123,6 +124,39 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function shouldSetPostBodyIfRequestIsPost()
+    {
+        $body = "some body";
+        $guzzleClient1 = $this->createGuzzleClientMock();
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
+
+        $guzzleClientFactory = new GuzzleClientFactoryStub(
+            array($guzzleClient1)
+        );
+
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
+
+        $guzzleRequest = $this->createGuzzleEntityEnclosingRequest($guzzleResponse);
+
+        $guzzleClient1->expects($this->any())
+            ->method('post')
+            ->with(self::URL)
+            ->will($this->returnValue($guzzleRequest));
+
+        $guzzleRequest->expects($this->once())
+            ->method('setBody')
+            ->with($body);
+
+        $instance = $this->createInstance(Request::POST, $guzzleClientFactory);
+        $instance->setBody($body);
+
+
+        $instance->send();
+    }
+
+    /**
      * @param string $method
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      *
@@ -156,7 +190,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param GuzzleResponse $guzzleResponse
-     * @return GuzzleRequest
+     * @return GuzzleRequest | \PHPUnit_Framework_MockObject_MockObject
      */
     private function createGuzzleRequest(GuzzleResponse $guzzleResponse)
     {
@@ -171,6 +205,25 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         return $guzzleRequest;
     }
+
+    /**
+     * @param GuzzleResponse $guzzleResponse
+     * @return EntityEnclosingRequest | \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createGuzzleEntityEnclosingRequest(GuzzleResponse $guzzleResponse)
+    {
+
+        $guzzleRequest = $this->getMockBuilder('Guzzle\Http\Message\EntityEnclosingRequest')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $guzzleRequest->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($guzzleResponse));
+
+        return $guzzleRequest;
+    }
+
 
     /**
      * @return ServerErrorResponseException

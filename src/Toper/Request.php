@@ -84,7 +84,7 @@ class Request
     /**
      * @param string $body
      */
-    public function setBod($body)
+    public function setBody($body)
     {
         $this->body = $body;
     }
