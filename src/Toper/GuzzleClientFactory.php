@@ -7,8 +7,15 @@ use Guzzle\Http\Client as GuzzleClient;
 
 class GuzzleClientFactory implements GuzzleClientFactoryInterface
 {
-    public function create($host, array $options)
+    private $guzzleClientOptions = array();
+
+    public function __construct(array $guzzleClientOptions = array())
     {
-        return new GuzzleClient($host, $options);
+        $this->guzzleClientOptions = $guzzleClientOptions;
+    }
+
+    public function create($host)
+    {
+        return new GuzzleClient($host, $this->guzzleClientOptions);
     }
 } 

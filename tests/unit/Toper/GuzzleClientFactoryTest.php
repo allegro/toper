@@ -18,9 +18,9 @@ class GuzzleClientFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldCreateClient()
     {
-        $factory = new GuzzleClientFactory();
+        $factory = new GuzzleClientFactory($this->options);
 
-        $client = $factory->create(self::BASE_URL, $this->options);
+        $client = $factory->create(self::BASE_URL);
 
         $this->assertEquals(self::BASE_URL, $client->getBaseUrl());
         $this->assertEquals($this->options['timeout'], $client->getConfig('timeout'));

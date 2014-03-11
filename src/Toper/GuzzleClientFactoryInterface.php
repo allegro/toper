@@ -4,5 +4,5 @@ namespace Toper;
 
 interface GuzzleClientFactoryInterface
 {
-    public function create($host, array $options);
+    public function create($host);
 } 
