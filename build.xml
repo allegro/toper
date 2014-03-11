@@ -8,7 +8,7 @@
     </target>
 
     <target name="test">
-        <phpunit haltonfailure="true" printsummary="true">
+        <phpunit haltonfailure="true" printsummary="true" bootstrap="vendor/autoload.php">
             <batchtest>
                 <fileset dir="${phing.dir}/tests">
                     <include name="**/*Test.php"/>
