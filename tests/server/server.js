@@ -40,6 +40,18 @@ http.createServer(function (req, res) {
         });
 
     }
+
+
+    if (req.url == '/should_be_post_application_json') {
+        if (req.method == 'POST' && req.headers['content-type'] === 'application/json') {
+            res.writeHead(200);
+            res.end("ok");
+        } else {
+            res.writeHead(400);
+            res.end("bad request");
+        }
+
+    }
 }).listen(7900);
 
 codes = {

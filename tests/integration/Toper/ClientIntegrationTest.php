@@ -90,4 +90,29 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('ok', $response->getBody());
     }
+
+    /**
+     * @test
+     */
+    public function shouldSendHeaderSetByGuzzleClientOptions() {
+
+        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST4, self::HOST1));
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory(
+                array(
+                    'request.options' => array(
+                        'headers' => array(
+                            'Content-Type' => 'application/json'
+                        )
+                    )
+                )
+            )
+        );
+
+        $request = $client->post("/should_be_post_application_json");
+        $request->setBody("data");
+
+        $response = $request->send();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+    }
 } 
