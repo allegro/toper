@@ -60,6 +60,21 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Request::POST, $request->getMethod());
     }
 
+
+    /**
+     * @test
+     */
+    public function shouldPutCreatePostRequest()
+    {
+        $url = "/test";
+        $client = $this->createClient();
+        $request = $client->put($url);
+
+        $this->assertEquals($url, $request->getUrl());
+        $this->assertEquals($this->hostPool, $request->getHostPool());
+        $this->assertEquals(Request::PUT, $request->getMethod());
+    }
+
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject | HostPoolProviderInterface
      */

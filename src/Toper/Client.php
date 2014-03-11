@@ -58,4 +58,20 @@ class Client implements ClientInterface
             $this->guzzleClientFactory
         );
     }
+
+
+    /**
+     * @param string $url
+     *
+     * @return Request
+     */
+    public function put($url)
+    {
+        return new Request(
+            Request::PUT,
+            $url,
+            $this->hostPoolProvider->get(),
+            $this->guzzleClientFactory
+        );
+    }
 }

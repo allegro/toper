@@ -156,6 +156,40 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $instance->send();
     }
 
+
+    /**
+     * @test
+     */
+    public function shouldSetBodyIfRequestIsPut()
+    {
+        $body = "some body";
+        $guzzleClient1 = $this->createGuzzleClientMock();
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
+
+        $guzzleClientFactory = new GuzzleClientFactoryStub(
+            array($guzzleClient1)
+        );
+
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
+
+        $guzzleRequest = $this->createGuzzleEntityEnclosingRequest($guzzleResponse);
+
+        $guzzleClient1->expects($this->any())
+            ->method('put')
+            ->with(self::URL)
+            ->will($this->returnValue($guzzleRequest));
+
+        $guzzleRequest->expects($this->once())
+            ->method('setBody')
+            ->with($body);
+
+        $instance = $this->createInstance(Request::PUT, $guzzleClientFactory);
+        $instance->setBody($body);
+
+
+        $instance->send();
+    }
+
     /**
      * @param string $method
      * @param GuzzleClientFactoryInterface $guzzleClientFactory

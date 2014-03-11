@@ -13,6 +13,8 @@ class Request
 
     const POST = "post";
 
+    const PUT = "put";
+
     /**
      * @var HostPoolInterface
      */
