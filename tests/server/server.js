@@ -58,7 +58,8 @@ codes = {
     0: {port: 7800, message: ""},
     200: {port: 7820, message: "ok"},
     500: {port: 7850, message: "internal error"},
-    404: {port: 7844, message: "not found"}
+    404: {port: 7844, message: "not found"},
+    302: {port: 7832, message: "redirect"}
 };
 
 for (var code in codes) {
