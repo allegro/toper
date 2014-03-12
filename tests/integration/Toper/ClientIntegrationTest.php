@@ -64,6 +64,21 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function shouldThrowConnectionErrorExceptionIfIsConnectionRefused()
+    {
+        $hostPoolProvider = new StaticHostPoolProvider(array('http://localhost:6788'));
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory());
+
+        $request = $client->get("/request");
+
+        $this->setExpectedException('\Toper\Exception\ConnectionErrorException');
+
+        $request->send();
+    }
+
+    /**
+     * @test
+     */
     public function shouldCallByPostMethod()
     {
         $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST1));

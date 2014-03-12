@@ -5,7 +5,7 @@ namespace Toper\Exception;
 
 use Toper\Response;
 
-class ServerException extends \Exception
+class ServerErrorException extends RequestException
 {
     private $response;
 

@@ -3,9 +3,11 @@
 namespace Toper;
 
 use Guzzle\Http\Exception\ClientErrorResponseException;
+use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
-use Toper\Exception\ServerException;
+use Toper\Exception\ConnectionErrorException;
+use Toper\Exception\ServerErrorException;
 use \Guzzle\Http\Message\Request as GuzzleRequest;
 
 class Request
@@ -93,7 +95,7 @@ class Request
     }
 
     /**
-     * @throws Exception\ServerException
+     * @throws Exception\ServerErrorException
      *
      * @return Response
      */
@@ -119,12 +121,14 @@ class Request
             } catch (ClientErrorResponseException $e) {
                 return new Response($e->getResponse());
             } catch (ServerErrorResponseException $e) {
-                $exception = new ServerException(
+                $exception = new ServerErrorException(
                     new Response($e->getResponse()),
                     $e->getMessage(),
                     $e->getCode(),
                     $e
                 );
+            } catch (CurlException $e) {
+                $exception = new ConnectionErrorException($e->getMessage(), $e->getCode(), $e);
             }
         }
 
