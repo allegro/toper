@@ -3,6 +3,7 @@
 namespace Toper;
 
 use Guzzle\Http\Client as GuzzleClient;
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Request as GuzzleRequest;
@@ -191,6 +192,40 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function shouldReturnResponseIfGuzzleThrowsClientErrorResponseException()
+    {
+        $responseErrorCode = 404;
+        $responseBody = 'not found';
+
+        $guzzleClient1 = $this->createGuzzleClientMock();
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
+
+        $guzzleClientFactory = new GuzzleClientFactoryStub(
+            array($guzzleClient1)
+        );
+
+        $guzzleResponse = new GuzzleResponse($responseErrorCode, array(), $responseBody);
+
+        $clientErrorResponseException = new ClientErrorResponseException();
+        $clientErrorResponseException->setResponse($guzzleResponse);
+
+        $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
+
+        $guzzleClient1->expects($this->any())
+            ->method('get')
+            ->with(self::URL)
+            ->will($this->returnValue($guzzleRequest));
+
+        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
+
+        $result = $instance->send();
+        $this->assertEquals($responseErrorCode, $result->getStatusCode());
+        $this->assertEquals($responseBody, $result->getBody());
+    }
+
+    /**
      * @param string $method
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      *
@@ -210,15 +245,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         return $this->getMockBuilder('Guzzle\Http\Client')
             ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClientFactoryInterface
-     */
-    private function createGuzzleClientFactoryMock()
-    {
-        return $this->getMockBuilder('Toper\GuzzleClientFactoryInterface')
             ->getMock();
     }
 

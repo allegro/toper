@@ -2,6 +2,7 @@
 
 namespace Toper;
 
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Toper\Exception\ServerException;
@@ -109,13 +110,14 @@ class Request
 
                 /** @var GuzzleRequest $guzzleRequest */
                 $guzzleRequest = $guzzleClient->{$this->method}($this->url);
-                //TODO write unit tests
                 if ($this->body && $guzzleRequest instanceof EntityEnclosingRequest) {
                     /** @var EntityEnclosingRequest $guzzleRequest */
                     $guzzleRequest->setBody($this->body);
                 }
 
                 return new Response($guzzleRequest->send());
+            } catch (ClientErrorResponseException $e) {
+                return new Response($e->getResponse());
             } catch (ServerErrorResponseException $e) {
                 $exception = new ServerException(
                     new Response($e->getResponse()),

@@ -12,6 +12,9 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
 
     const HOST4 = "http://localhost:7900";
 
+
+    const HOST_404 = "http://localhost:7844";
+
     /**
      * @test
      */
@@ -27,6 +30,20 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ok', $response->getBody());
     }
 
+    /**
+     * @test
+     */
+    public function shouldReturn4xxResponse() {
+
+        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST_404));
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory());
+
+        $request = $client->get("/request");
+
+        $response = $request->send();
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+    }
 
     /**
      * @test
