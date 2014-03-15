@@ -1,5 +1,5 @@
 var http = require('http');
-
+var url = require('url');
 console.log("http://localhost:7900/should_be_post");
 console.log("http://localhost:7900/should_be_put");
 
@@ -20,7 +20,7 @@ http.createServer(function (req, res) {
                 res.end("bad request");
             }
         });
-
+        return;
     }
 
     if (req.url == '/should_be_put') {
@@ -38,7 +38,7 @@ http.createServer(function (req, res) {
                 res.end("bad request");
             }
         });
-
+        return;
     }
 
 
@@ -50,8 +50,24 @@ http.createServer(function (req, res) {
             res.writeHead(400);
             res.end("bad request");
         }
+        return;
+    }
+
+    if (req.url.match(/^\/should_have_parameter/)) {
+        var parts = url.parse(req.url, true);
+        if (parts.query.key === "value") {
+            res.writeHead(200);
+            res.end("ok");
+        } else {
+            res.writeHead(400);
+            res.end("bad request");
+        }
+        return;
 
     }
+
+    res.writeHead(500);
+    res.end("bad request");
 }).listen(7900);
 
 codes = {
@@ -69,6 +85,7 @@ for (var code in codes) {
 
 function createPortServer(code) {
     http.createServer(function (req, res) {
+        console.log(req.url);
         res.writeHead(code);
         res.end(codes[code].message)
     }).listen(codes[code].port);

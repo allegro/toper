@@ -25,7 +25,22 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $client = new Client($hostPoolProvider, new GuzzleClientFactory());
 
         $request = $client->get("/request");
+        $response = $request->send();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+    }
 
+
+    /**
+     * @test
+     */
+    public function shouldSendRequestPrams()
+    {
+        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST4));
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory());
+
+        $request = $client->get("/should_have_parameter");
+        $request->addQueryParam("key", "value");
         $response = $request->send();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('ok', $response->getBody());

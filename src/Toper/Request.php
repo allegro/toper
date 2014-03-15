@@ -44,6 +44,11 @@ class Request
     private $body;
 
     /**
+     * @var array
+     */
+    private $queryParams = array();
+
+    /**
      * @param string $method
      * @param string $url
      * @param HostPoolInterface $hostPool
@@ -117,6 +122,8 @@ class Request
                     $guzzleRequest->setBody($this->body);
                 }
 
+                $this->updateQueryParams($guzzleRequest);
+
                 return new Response($guzzleRequest->send());
             } catch (ClientErrorResponseException $e) {
                 return new Response($e->getResponse());
@@ -133,5 +140,24 @@ class Request
         }
 
         throw $exception;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function addQueryParam($name, $value)
+    {
+        $this->queryParams[$name] = $value;
+    }
+
+    /**
+     * @param GuzzleRequest $request
+     */
+    private function updateQueryParams(GuzzleRequest $request)
+    {
+        foreach ($this->queryParams as $name => $value) {
+            $request->getQuery()->add($name, $value);
+        }
     }
 }

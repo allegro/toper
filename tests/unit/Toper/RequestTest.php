@@ -2,6 +2,7 @@
 
 namespace Toper;
 
+use Guzzle\Common\Collection;
 use Guzzle\Http\Client as GuzzleClient;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Guzzle\Http\Exception\CurlException;
@@ -9,6 +10,7 @@ use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Guzzle\Http\Message\Request as GuzzleRequest;
 use Guzzle\Http\Message\Response as GuzzleResponse;
+use Guzzle\Http\QueryString;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
@@ -258,6 +260,48 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function shouldSetQueryParam()
+    {
+        $paramName1 = 'name';
+        $paramValue1 = 'value';
+
+        $paramName2 = 'name';
+        $paramValue2 = 'value';
+
+        $responseErrorCode = 404;
+        $responseBody = 'not found';
+
+        $guzzleClient1 = $this->createGuzzleClientMock();
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
+
+        $guzzleClientFactory = new GuzzleClientFactoryStub(
+            array($guzzleClient1)
+        );
+
+        $guzzleResponse = new GuzzleResponse($responseErrorCode, array(), $responseBody);
+
+        $clientErrorResponseException = new ClientErrorResponseException();
+        $clientErrorResponseException->setResponse($guzzleResponse);
+
+        $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
+
+        $guzzleClient1->expects($this->any())
+            ->method('get')
+            ->with(self::URL)
+            ->will($this->returnValue($guzzleRequest));
+        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
+        $instance->addQueryParam($paramName1, $paramValue1);
+        $instance->addQueryParam($paramName2, $paramValue2);
+
+        $instance->send();
+
+        $this->assertEquals($paramValue1, $guzzleRequest->getQuery()->get($paramName1));
+        $this->assertEquals($paramValue2, $guzzleRequest->getQuery()->get($paramName2));
+    }
+
+    /**
      * @param string $method
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      *
@@ -295,6 +339,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->method('send')
             ->will($this->returnValue($guzzleResponse));
 
+        $guzzleQueryParams = new QueryString();
+        $guzzleRequest->expects($this->any())
+            ->method('getQuery')
+            ->will($this->returnValue($guzzleQueryParams));
+
+
         return $guzzleRequest;
     }
 
@@ -304,7 +354,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     private function createGuzzleEntityEnclosingRequest(GuzzleResponse $guzzleResponse)
     {
-
+        $guzzleParams = new Collection();
         $guzzleRequest = $this->getMockBuilder('Guzzle\Http\Message\EntityEnclosingRequest')
             ->disableOriginalConstructor()
             ->getMock();
@@ -312,6 +362,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $guzzleRequest->expects($this->once())
             ->method('send')
             ->will($this->returnValue($guzzleResponse));
+
+        $guzzleRequest->expects($this->any())
+            ->method('getParams')
+            ->will($this->returnValue($guzzleParams));
 
         return $guzzleRequest;
     }
