@@ -49,14 +49,21 @@ class Request
     private $queryParams = array();
 
     /**
+     * @var array
+     */
+    private $binds;
+
+    /**
      * @param string $method
      * @param string $url
+     * @param array $binds
      * @param HostPoolInterface $hostPool
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      */
     public function __construct(
         $method,
         $url,
+        array $binds,
         HostPoolInterface $hostPool,
         GuzzleClientFactoryInterface $guzzleClientFactory
     ) {
@@ -64,6 +71,7 @@ class Request
         $this->hostPool = $hostPool;
         $this->url = $url;
         $this->guzzleClientFactory = $guzzleClientFactory;
+        $this->binds = $binds;
     }
 
 
@@ -116,7 +124,7 @@ class Request
                 );
 
                 /** @var GuzzleRequest $guzzleRequest */
-                $guzzleRequest = $guzzleClient->{$this->method}($this->url);
+                $guzzleRequest = $guzzleClient->{$this->method}(array($this->url, $this->binds));
                 if ($this->body && $guzzleRequest instanceof EntityEnclosingRequest) {
                     /** @var EntityEnclosingRequest $guzzleRequest */
                     $guzzleRequest->setBody($this->body);
@@ -140,6 +148,13 @@ class Request
         }
 
         throw $exception;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBinds() {
+        return $this->binds;
     }
 
     /**

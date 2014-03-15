@@ -30,6 +30,19 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ok', $response->getBody());
     }
 
+    /**
+     * @test
+     */
+    public function shouldBindUrlStringParametersMethod()
+    {
+        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST4));
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory());
+        $method = 'get';
+        $request = $client->get("/should_be_{method}", array('method' => $method));
+        $response = $request->send();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+    }
 
     /**
      * @test

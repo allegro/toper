@@ -41,22 +41,46 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
 
-        $guzzleClient->expects($this->any())
-            ->method('get')
-            ->with(self::URL)
-            ->will($this->returnValue($guzzleRequest));
-
+        $this->prepareGuzzleClientMock($guzzleClient, $guzzleRequest);
 
         $this->returnValue($guzzleResponse);
 
         $instance = $this->createInstance(
             Request::GET,
+            array(),
             $guzzleClientFactory
         );
         $response = $instance->send();
 
         $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
         $this->assertEquals($guzzleResponse->getBody(true), $response->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldSendRequestWithBinds()
+    {
+        $guzzleClient = $this->createGuzzleClientMock();
+        $guzzleClientFactory = new GuzzleClientFactoryStub(
+            array($guzzleClient)
+        );
+
+        $binds = array('key' => 'value');
+
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
+
+        $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
+
+        $this->prepareGuzzleClientMock($guzzleClient, $guzzleRequest, Request::GET, $binds);
+
+        $instance = $this->createInstance(
+            Request::GET,
+            $binds,
+            $guzzleClientFactory
+        );
+
+        $instance->send();
     }
 
     /**
@@ -81,12 +105,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
 
-        $guzzleClient2->expects($this->any())
-            ->method('get')
-            ->with(self::URL)
-            ->will($this->returnValue($guzzleRequest));
+        $this->prepareGuzzleClientMock($guzzleClient2, $guzzleRequest);
 
-        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
         $response = $instance->send();
 
         $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
@@ -116,12 +137,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
 
-        $guzzleClient2->expects($this->any())
-            ->method('get')
-            ->with(self::URL)
-            ->will($this->returnValue($guzzleRequest));
+        $this->prepareGuzzleClientMock($guzzleClient2, $guzzleRequest);
 
-        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
         $response = $instance->send();
 
         $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
@@ -148,10 +166,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $guzzleClient2->expects($this->any())
             ->method('get')
-            ->with(self::URL)
             ->will($this->throwException($e));
 
-        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
 
         $this->setExpectedException('Toper\Exception\ServerErrorException');
 
@@ -175,16 +192,16 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $guzzleRequest = $this->createGuzzleEntityEnclosingRequest($guzzleResponse);
 
-        $guzzleClient1->expects($this->any())
-            ->method('post')
-            ->with(self::URL)
-            ->will($this->returnValue($guzzleRequest));
+        $this->prepareGuzzleClientMock(
+            $guzzleClient1,
+            $guzzleRequest, Request::POST
+        );
 
         $guzzleRequest->expects($this->once())
             ->method('setBody')
             ->with($body);
 
-        $instance = $this->createInstance(Request::POST, $guzzleClientFactory);
+        $instance = $this->createInstance(Request::POST, array(), $guzzleClientFactory);
         $instance->setBody($body);
 
 
@@ -209,16 +226,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $guzzleRequest = $this->createGuzzleEntityEnclosingRequest($guzzleResponse);
 
-        $guzzleClient1->expects($this->any())
-            ->method('put')
-            ->with(self::URL)
-            ->will($this->returnValue($guzzleRequest));
+        $this->prepareGuzzleClientMock($guzzleClient1, $guzzleRequest, Request::PUT);
 
         $guzzleRequest->expects($this->once())
             ->method('setBody')
             ->with($body);
 
-        $instance = $this->createInstance(Request::PUT, $guzzleClientFactory);
+        $instance = $this->createInstance(Request::PUT, array(), $guzzleClientFactory);
         $instance->setBody($body);
 
 
@@ -246,13 +260,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $clientErrorResponseException->setResponse($guzzleResponse);
 
         $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
+        $this->prepareGuzzleClientMock($guzzleClient1, $guzzleRequest);
 
-        $guzzleClient1->expects($this->any())
-            ->method('get')
-            ->with(self::URL)
-            ->will($this->returnValue($guzzleRequest));
-
-        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
 
         $result = $instance->send();
         $this->assertEquals($responseErrorCode, $result->getStatusCode());
@@ -286,12 +296,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $clientErrorResponseException->setResponse($guzzleResponse);
 
         $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
+        $this->prepareGuzzleClientMock($guzzleClient1, $guzzleRequest);
 
-        $guzzleClient1->expects($this->any())
-            ->method('get')
-            ->with(self::URL)
-            ->will($this->returnValue($guzzleRequest));
-        $instance = $this->createInstance(Request::GET, $guzzleClientFactory);
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
         $instance->addQueryParam($paramName1, $paramValue1);
         $instance->addQueryParam($paramName2, $paramValue2);
 
@@ -302,15 +309,31 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function shouldReturnBinds() {
+        $binds = array('key' => 'value');
+        $instance = $this->createInstance(
+            Request::GET, $binds, $this->getMock('Toper\GuzzleClientFactoryInterface')
+        );
+
+        $this->assertEquals($binds, $instance->getBinds());
+    }
+
+    /**
      * @param string $method
+     * @param array $binds
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      *
      * @return Request
      */
-    private function createInstance($method, GuzzleClientFactoryInterface $guzzleClientFactory)
+    private function createInstance(
+        $method,
+        array $binds,
+        GuzzleClientFactoryInterface $guzzleClientFactory)
     {
         return new Request(
-            $method, self::URL, $this->hostPool, $guzzleClientFactory
+            $method, self::URL, $binds, $this->hostPool, $guzzleClientFactory
         );
     }
 
@@ -370,6 +393,23 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         return $guzzleRequest;
     }
 
+    /**
+     * @param \PHPUnit_Framework_MockObject_MockObject $guzzleClient
+     * @param GuzzleRequest $guzzleRequest
+     * @param string $method
+     * @param array $binds
+     */
+    private function prepareGuzzleClientMock(
+        \PHPUnit_Framework_MockObject_MockObject $guzzleClient,
+        GuzzleRequest $guzzleRequest,
+        $method = Request::GET,
+        array $binds = array()
+    ) {
+        $guzzleClient->expects($this->any())
+            ->method($method)
+            ->with(array(self::URL, $binds))
+            ->will($this->returnValue($guzzleRequest));
+    }
 
     /**
      * @return ServerErrorResponseException

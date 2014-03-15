@@ -76,6 +76,48 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function shouldGetCreateGetRequestWithBinds()
+    {
+        $url = "/test";
+        $client = $this->createClient();
+        $binds = array('key' => 'value');
+        $request = $client->get($url, $binds);
+
+        $this->assertEquals($binds, $request->getBinds());
+    }
+
+
+    /**
+     * @test
+     */
+    public function shouldPostCreatePostRequestWithBinds()
+    {
+        $url = "/test";
+        $binds = array('key' => 'value');
+        $client = $this->createClient();
+        $request = $client->post($url, $binds);
+
+        $this->assertEquals($binds, $request->getBinds());
+    }
+
+
+    /**
+     * @test
+     */
+    public function shouldPutCreatePostRequestWithBinds()
+    {
+        $url = "/test";
+        $binds = array('key' => 'value');
+        $client = $this->createClient();
+        $request = $client->put($url, $binds);
+
+        $this->assertEquals($binds, $request->getBinds());
+    }
+
+
+    /**
      * @return \PHPUnit_Framework_MockObject_MockObject | HostPoolProviderInterface
      */
     private function createHostPoolProviderMock()

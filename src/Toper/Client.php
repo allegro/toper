@@ -32,13 +32,15 @@ class Client implements ClientInterface
     /**
      * @param string $url
      *
+     * @param array $binds
      * @return Request
      */
-    public function get($url)
+    public function get($url, array $binds = array())
     {
         return new Request(
             Request::GET,
             $url,
+            $binds,
             $this->hostPoolProvider->get(),
             $this->guzzleClientFactory
         );
@@ -47,13 +49,15 @@ class Client implements ClientInterface
     /**
      * @param string $url
      *
+     * @param array $binds
      * @return Request
      */
-    public function post($url)
+    public function post($url, array $binds = array())
     {
         return new Request(
             Request::POST,
             $url,
+            $binds,
             $this->hostPoolProvider->get(),
             $this->guzzleClientFactory
         );
@@ -63,13 +67,15 @@ class Client implements ClientInterface
     /**
      * @param string $url
      *
+     * @param array $binds
      * @return Request
      */
-    public function put($url)
+    public function put($url, array $binds = array())
     {
         return new Request(
             Request::PUT,
             $url,
+            $binds,
             $this->hostPoolProvider->get(),
             $this->guzzleClientFactory
         );
