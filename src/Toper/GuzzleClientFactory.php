@@ -14,8 +14,8 @@ class GuzzleClientFactory implements GuzzleClientFactoryInterface
         $this->guzzleClientOptions = $guzzleClientOptions;
     }
 
-    public function create($host)
+    public function create()
     {
-        return new GuzzleClient($host, $this->guzzleClientOptions);
+        return new GuzzleClient('', $this->guzzleClientOptions);
     }
-} 
+}

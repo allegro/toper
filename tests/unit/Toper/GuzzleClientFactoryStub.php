@@ -25,12 +25,10 @@ class GuzzleClientFactoryStub implements GuzzleClientFactoryInterface
     }
 
     /**
-     * @param string $host
-     *
      * @return GuzzleClient
      */
-    public function create($host)
+    public function create()
     {
         return $this->guzzleClients[$this->counter++];
     }
-} 
+}

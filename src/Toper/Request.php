@@ -115,13 +115,11 @@ class Request
     public function send()
     {
         $exception = null;
+        $guzzleClient = $this->guzzleClientFactory->create();
+
         while ($this->hostPool->hasNext()) {
             try {
-                $host = $this->hostPool->getNext();
-                $guzzleClient = $this->guzzleClientFactory->create(
-                    $host,
-                    array()
-                );
+                $guzzleClient->setBaseUrl($this->hostPool->getNext());
 
                 /** @var GuzzleRequest $guzzleRequest */
                 $guzzleRequest = $guzzleClient->{$this->method}(array($this->url, $this->binds));

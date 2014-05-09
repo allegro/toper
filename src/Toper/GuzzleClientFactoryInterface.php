@@ -2,7 +2,12 @@
 
 namespace Toper;
 
+use Guzzle\Http\Client as GuzzleClient;
+
 interface GuzzleClientFactoryInterface
 {
-    public function create($host);
-} 
+    /**
+     * @return GuzzleClient
+     */
+    public function create();
+}
