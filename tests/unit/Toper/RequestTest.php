@@ -3,7 +3,7 @@
 namespace Toper;
 
 use Guzzle\Common\Collection;
-use Guzzle\Http\Client as GuzzleClient;
+use Guzzle\Http\ClientInterface as GuzzleClientInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
@@ -80,99 +80,125 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-//    public function shouldCatchGuzzleServerErrorExceptionAndCallNextHost()
-//    {
-//        $guzzleClient = $this->createGuzzleClientMock();
-//        $closure = function () {
-//            switch() {
-//
-//            }
-//        };
-//
-//        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1, self::BASE_URL2));
-//
-//        $guzzleClientFactory = new GuzzleClientFactoryStub(
-//            array($guzzleClient)
-//        );
-//
-//        $e = $this->createGuzzleServerErrorResponseException();
-//        $guzzleClient->expects($this->any())
-//            ->method('get')
-//            ->will($this->throwException($e));
-//
-//        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
-//
-//        $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
-//
-//        $this->prepareGuzzleClientMock($guzzleClient2, $guzzleRequest);
-//
-//        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
-//        $response = $instance->send();
-//
-//        $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
-//        $this->assertEquals($guzzleResponse->getBody(true), $response->getBody());
-//    }
+    public function shouldCatchGuzzleServerErrorExceptionAndCallNextHost()
+    {
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
+
+        $e = $this->createGuzzleServerErrorResponseException();
+        $guzzleRequest1 = $this->createGuzzleRequestMockWithException($e);
+
+        $guzzleRequest2 = $this->createGuzzleRequest($guzzleResponse);
+
+        $url1 = self::BASE_URL1;
+        $url2 = self::BASE_URL2;
+
+        $behaviors = array(
+            'get' => function (GuzzleClientInterface $guzzleClient)
+                use ($url1, $url2, $guzzleRequest1, $guzzleRequest2) {
+                    if ($guzzleClient->getBaseUrl() == $url1) {
+                        return $guzzleRequest1;
+                    }
+
+                    if ($guzzleClient->getBaseUrl() == $url2) {
+                        return $guzzleRequest2;
+                    }
+
+                    return null;
+                }
+
+        );
+
+        $guzzleClientStub = new GuzzleClientStub($behaviors);
+
+
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1, self::BASE_URL2));
+
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClientStub);
+        $response = $instance->send();
+
+        $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
+        $this->assertEquals($guzzleResponse->getBody(true), $response->getBody());
+    }
 
 
     /**
      * @test
      */
-//    public function shouldCatchGuzzleCurlExceptionAndCallNextHost()
-//    {
-//        $guzzleClient1 = $this->createGuzzleClientMock();
-//        $guzzleClient2 = $this->createGuzzleClientMock();
-//        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1, self::BASE_URL2));
-//
-//        $guzzleClientFactory = new GuzzleClientFactoryStub(
-//            array($guzzleClient1, $guzzleClient2)
-//        );
-//
-//        $e = $this->createGuzzleCurlException();
-//        $guzzleClient1->expects($this->any())
-//            ->method('get')
-//            ->will($this->throwException($e));
-//
-//        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
-//
-//        $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
-//
-//        $this->prepareGuzzleClientMock($guzzleClient2, $guzzleRequest);
-//
-//        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
-//        $response = $instance->send();
-//
-//        $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
-//        $this->assertEquals($guzzleResponse->getBody(true), $response->getBody());
-//    }
+    public function shouldCatchGuzzleCurlExceptionAndCallNextHost()
+    {
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
+
+        $e = $this->createGuzzleCurlException();
+        $guzzleRequest1 = $this->createGuzzleRequestMockWithException($e);
+
+        $guzzleRequest2 = $this->createGuzzleRequest($guzzleResponse);
+
+        $url1 = self::BASE_URL1;
+        $url2 = self::BASE_URL2;
+
+        $behaviors = array(
+            'get' => function (GuzzleClientInterface $client)
+                use ($guzzleRequest1, $guzzleRequest2, $url1, $url2) {
+                    if($client->getBaseUrl() == $url1) {
+                        return $guzzleRequest1;
+                    }
+
+                    if($client->getBaseUrl() == $url2) {
+                        return $guzzleRequest2;
+                    }
+
+                    return null;
+                }
+        );
+
+        $guzzleClient = new GuzzleClientStub($behaviors);
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1, self::BASE_URL2));
+
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClient);
+        $response = $instance->send();
+
+        $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
+        $this->assertEquals($guzzleResponse->getBody(true), $response->getBody());
+    }
 
     /**
      * @test
      */
-//    public function shouldThrowLastExceptionIfAllHostFailed()
-//    {
-//        $guzzleClient1 = $this->createGuzzleClientMock();
-//        $guzzleClient2 = $this->createGuzzleClientMock();
-//        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1, self::BASE_URL2));
-//
-//        $guzzleClientFactory = new GuzzleClientFactoryStub(
-//            array($guzzleClient1, $guzzleClient2)
-//        );
-//
-//        $e = $this->createGuzzleServerErrorResponseException();
-//        $guzzleClient1->expects($this->any())
-//            ->method('get')
-//            ->will($this->throwException($e));
-//
-//        $guzzleClient2->expects($this->any())
-//            ->method('get')
-//            ->will($this->throwException($e));
-//
-//        $instance = $this->createInstance(Request::GET, array(), $guzzleClientFactory);
-//
-//        $this->setExpectedException('Toper\Exception\ServerErrorException');
-//
-//        $instance->send();
-//    }
+    public function shouldThrowLastExceptionIfAllHostFailed()
+    {
+        $e = $this->createGuzzleServerErrorResponseException();
+        $guzzleRequest1 = $this->createGuzzleRequestMockWithException($e);
+
+        $guzzleRequest2 = $this->createGuzzleRequestMockWithException($e);
+
+        $url1 = self::BASE_URL1;
+        $url2 = self::BASE_URL2;
+
+        $behaviors = array(
+            'get' => function (GuzzleClientInterface $client)
+                use ($guzzleRequest1, $guzzleRequest2, $url1, $url2) {
+                    if($client->getBaseUrl() == $url1) {
+                        return $guzzleRequest1;
+                    }
+
+                    if($client->getBaseUrl() == $url2) {
+                        return $guzzleRequest2;
+                    }
+
+                    return null;
+                }
+        );
+
+        $guzzleClient = new GuzzleClientStub($behaviors);
+
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1, self::BASE_URL2));
+
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClient);
+
+        $this->setExpectedException('Toper\Exception\ServerErrorException');
+
+        $instance->send();
+    }
 
     /**
      * @test
@@ -198,7 +224,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $instance = $this->createInstance(Request::POST, array(), $guzzleClient1);
         $instance->setBody($body);
-
 
         $instance->send();
     }
@@ -246,7 +271,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $clientErrorResponseException = new ClientErrorResponseException();
         $clientErrorResponseException->setResponse($guzzleResponse);
 
-        $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
+        $e = $this->createGuzzleClientException($guzzleResponse);
+        $guzzleRequest = $this->createGuzzleRequestMockWithException($e);
         $this->prepareGuzzleClientMock($guzzleClient, $guzzleRequest);
 
         $instance = $this->createInstance(Request::GET, array(), $guzzleClient);
@@ -294,7 +320,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function shouldReturnBinds() {
+    public function shouldReturnBinds()
+    {
         $binds = array('key' => 'value');
         $instance = $this->createInstance(
             Request::GET, $binds, $this->createGuzzleClientMock()
@@ -306,22 +333,23 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string $method
      * @param array $binds
-     * @param GuzzleClient $guzzleClient
+     * @param GuzzleClientInterface $guzzleClient
      *
      * @return Request
      */
     private function createInstance(
         $method,
         array $binds,
-        GuzzleClient $guzzleClient
-    ) {
+        GuzzleClientInterface $guzzleClient
+    )
+    {
         return new Request(
             $method, self::URL, $binds, $this->hostPool, $guzzleClient
         );
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClient
+     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClientInterface
      */
     private function createGuzzleClientMock()
     {
@@ -352,6 +380,24 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         return $guzzleRequest;
     }
+
+    /**
+     * @param \Exception $e
+     * @return GuzzleRequest | \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createGuzzleRequestMockWithException(\Exception $e)
+    {
+        $guzzleRequest = $this->getMockBuilder('Guzzle\Http\Message\Request')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $guzzleRequest->expects($this->once())
+            ->method('send')
+            ->will($this->throwException($e));
+
+        return $guzzleRequest;
+    }
+
 
     /**
      * @param GuzzleResponse $guzzleResponse
@@ -386,7 +432,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         GuzzleRequest $guzzleRequest,
         $method = Request::GET,
         array $binds = array()
-    ) {
+    )
+    {
         $guzzleClient->expects($this->any())
             ->method($method)
             ->with(array(self::URL, $binds))
@@ -398,7 +445,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      * @param string $method
      * @param \Closure $callback
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClient
+     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClientInterface
      */
     private function mockGuzzleClientMethod(
         \PHPUnit_Framework_MockObject_MockObject $mockObject, $method, \Closure $callback
@@ -429,6 +476,20 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     private function createGuzzleCurlException()
     {
         $e = new CurlException();
+
+        return $e;
+    }
+
+
+    /**
+     * @param GuzzleResponse $response
+     * @return ClientErrorResponseException
+     */
+    private function createGuzzleClientException(GuzzleResponse $response)
+    {
+        $e = new ClientErrorResponseException();
+
+        $e->setResponse($response);
 
         return $e;
     }

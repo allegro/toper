@@ -17,6 +17,8 @@ class GuzzleClientFactoryStub implements GuzzleClientFactoryInterface
     private $counter = 0;
 
     /**
+     * TODO should require one object
+     *
      * @param array $guzzleClients
      */
     public function __construct(array $guzzleClients)
