@@ -82,16 +82,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
 //    public function shouldCatchGuzzleServerErrorExceptionAndCallNextHost()
 //    {
-//        $guzzleClient1 = $this->createGuzzleClientMock();
-//        $guzzleClient2 = $this->createGuzzleClientMock();
+//        $guzzleClient = $this->createGuzzleClientMock();
+//        $closure = function () {
+//            switch() {
+//
+//            }
+//        };
+//
 //        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1, self::BASE_URL2));
 //
 //        $guzzleClientFactory = new GuzzleClientFactoryStub(
-//            array($guzzleClient1)
+//            array($guzzleClient)
 //        );
 //
 //        $e = $this->createGuzzleServerErrorResponseException();
-//        $guzzleClient1->expects($this->any())
+//        $guzzleClient->expects($this->any())
 //            ->method('get')
 //            ->will($this->throwException($e));
 //
@@ -345,7 +350,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->method('getQuery')
             ->will($this->returnValue($guzzleQueryParams));
 
-
         return $guzzleRequest;
     }
 
@@ -387,6 +391,24 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->method($method)
             ->with(array(self::URL, $binds))
             ->will($this->returnValue($guzzleRequest));
+    }
+
+    /**
+     * @param \PHPUnit_Framework_MockObject_MockObject $mockObject
+     * @param string $method
+     * @param \Closure $callback
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClient
+     */
+    private function mockGuzzleClientMethod(
+        \PHPUnit_Framework_MockObject_MockObject $mockObject, $method, \Closure $callback
+    )
+    {
+        $mockObject->expects($this->any())
+            ->method($method)
+            ->will($this->returnCallback($callback));
+
+        return $mockObject;
     }
 
     /**

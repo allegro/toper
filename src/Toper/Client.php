@@ -2,9 +2,6 @@
 
 namespace Toper;
 
-use \Toper\Http\Client as GuzzleClient;
-use Toper\Request;
-
 class Client implements ClientInterface
 {
     /**

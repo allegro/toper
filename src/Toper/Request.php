@@ -9,7 +9,7 @@ use Guzzle\Http\Message\EntityEnclosingRequest;
 use Toper\Exception\ConnectionErrorException;
 use Toper\Exception\ServerErrorException;
 use \Guzzle\Http\Message\Request as GuzzleRequest;
-use Guzzle\Http\Client as GuzzleClient;
+use Guzzle\Http\ClientInterface as GuzzleClientInterface;
 
 class Request
 {
@@ -35,7 +35,7 @@ class Request
     private $method;
 
     /**
-     * @var GuzzleClient
+     * @var GuzzleClientInterface
      */
     private $guzzleClient;
 
@@ -59,14 +59,14 @@ class Request
      * @param string $url
      * @param array $binds
      * @param HostPoolInterface $hostPool
-     * @param GuzzleClient $guzzleClient
+     * @param GuzzleClientInterface $guzzleClient
      */
     public function __construct(
         $method,
         $url,
         array $binds,
         HostPoolInterface $hostPool,
-        GuzzleClient $guzzleClient
+        GuzzleClientInterface $guzzleClient
     ) {
         $this->method = $method;
         $this->hostPool = $hostPool;
