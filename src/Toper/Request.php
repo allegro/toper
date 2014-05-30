@@ -9,6 +9,7 @@ use Guzzle\Http\Message\EntityEnclosingRequest;
 use Toper\Exception\ConnectionErrorException;
 use Toper\Exception\ServerErrorException;
 use \Guzzle\Http\Message\Request as GuzzleRequest;
+use Guzzle\Http\Client as GuzzleClient;
 
 class Request
 {
@@ -34,9 +35,9 @@ class Request
     private $method;
 
     /**
-     * @var GuzzleClientFactoryInterface
+     * @var GuzzleClient
      */
-    private $guzzleClientFactory;
+    private $guzzleClient;
 
     /**
      * @var string
@@ -58,19 +59,19 @@ class Request
      * @param string $url
      * @param array $binds
      * @param HostPoolInterface $hostPool
-     * @param GuzzleClientFactoryInterface $guzzleClientFactory
+     * @param GuzzleClient $guzzleClient
      */
     public function __construct(
         $method,
         $url,
         array $binds,
         HostPoolInterface $hostPool,
-        GuzzleClientFactoryInterface $guzzleClientFactory
+        GuzzleClient $guzzleClient
     ) {
         $this->method = $method;
         $this->hostPool = $hostPool;
         $this->url = $url;
-        $this->guzzleClientFactory = $guzzleClientFactory;
+        $this->guzzleClient = $guzzleClient;
         $this->binds = $binds;
     }
 
@@ -115,14 +116,16 @@ class Request
     public function send()
     {
         $exception = null;
-        $guzzleClient = $this->guzzleClientFactory->create();
 
         while ($this->hostPool->hasNext()) {
             try {
-                $guzzleClient->setBaseUrl($this->hostPool->getNext());
+                $this->guzzleClient->setBaseUrl($this->hostPool->getNext());
 
                 /** @var GuzzleRequest $guzzleRequest */
-                $guzzleRequest = $guzzleClient->{$this->method}(array($this->url, $this->binds));
+                $guzzleRequest = $this->guzzleClient->{$this->method}(
+                    array($this->url, $this->binds)
+                );
+
                 if ($this->body && $guzzleRequest instanceof EntityEnclosingRequest) {
                     /** @var EntityEnclosingRequest $guzzleRequest */
                     $guzzleRequest->setBody($this->body);

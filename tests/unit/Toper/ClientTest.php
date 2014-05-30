@@ -2,6 +2,8 @@
 
 namespace Toper;
 
+use Guzzle\Http\Client as GuzzleClient;
+
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -13,6 +15,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      * @var GuzzleClientFactoryInterface
      */
     private $guzzleClientFactory;
+
+    /**
+     * @var GuzzleClient | \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $guzzleClientMock;
 
     /**
      * @var HostPoolInterface
@@ -28,6 +35,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->will($this->returnValue($this->hostPool));
 
+        $this->guzzleClientMock = $this->createGuzzleClientMock();
         $this->guzzleClientFactory = $this->createGuzzleClientFactoryMock();
     }
 
@@ -147,7 +155,23 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     private function createGuzzleClientFactoryMock()
     {
-        return $this->getMockBuilder('Toper\GuzzleClientFactoryInterface')
+        $clientFactory = $this->getMockBuilder('Toper\GuzzleClientFactoryInterface')
+            ->getMock();
+
+        $clientFactory->expects($this->any())
+            ->method('create')
+            ->will($this->returnValue($this->guzzleClientMock));
+
+        return $clientFactory;
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClient
+     */
+    private function createGuzzleClientMock()
+    {
+        return $this->getMockBuilder('Guzzle\Http\Client')
+            ->disableOriginalConstructor()
             ->getMock();
     }
 }

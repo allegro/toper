@@ -42,7 +42,7 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory
+            $this->guzzleClientFactory->create()
         );
     }
 
@@ -59,7 +59,7 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory
+            $this->guzzleClientFactory->create()
         );
     }
 
@@ -77,7 +77,7 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory
+            $this->guzzleClientFactory->create()
         );
     }
 }
