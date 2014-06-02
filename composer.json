@@ -1,9 +1,9 @@
 {
-    "name": "andrejczyn/toper",
+    "name": "allegro/toper",
     "authors": [
         {
             "name": "Grzegorz Andrejczyn",
-            "email": "grzegorz.andrejczyn@gmail.com"
+            "email": "grzegorz.andrejczyn@allegro.pl"
         }
     ],
     "minimum-stability": "dev",
