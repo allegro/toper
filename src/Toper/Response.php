@@ -31,4 +31,12 @@ class Response
     {
         return $this->guzzleResponse->getBody(true);
     }
-} 
+
+    /**
+     * @return string
+     */
+    public function getReasonPhrase()
+    {
+        return $this->guzzleResponse->getReasonPhrase();
+    }
+}
