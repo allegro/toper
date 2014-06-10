@@ -154,7 +154,8 @@ class Request
     /**
      * @return array
      */
-    public function getBinds() {
+    public function getBinds()
+    {
         return $this->binds;
     }
 

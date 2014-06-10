@@ -72,4 +72,3 @@ class SimpleHostPoolTest extends \PHPUnit_Framework_TestCase
         return new SimpleHostPool($hosts);
     }
 }
- 

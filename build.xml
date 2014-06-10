@@ -2,22 +2,49 @@
 
 <project name="Toper" basedir="." default="test">
 
-    <target name="build">
-        <phingcall target="code-sniffer"/>
-        <phingcall target="test"/>
+    <target name="test" description="Run tests">
+        <phingcall target="test.syntax"/>
+        <phingcall target="test.cs"/>
+        <phingcall target="test.unit"/>
+        <phingcall target="test.integration"/>
     </target>
 
-    <target name="test">
-        <phpunit haltonfailure="true" printsummary="true" bootstrap="vendor/autoload.php">
-            <batchtest>
-                <fileset dir="${phing.dir}/tests">
-                    <include name="**/*Test.php"/>
-                </fileset>
-            </batchtest>
-        </phpunit>
+    <target name="test.cs" description="Run codesniffer">
+        <exec
+                command="bin/phpcs --standard=PSR2 --ignore=${project.basedir}/vendor/,${project.basedir}/bin/ -p --report=full ${project.basedir}/"
+                passthru="true"
+                checkreturn="true"/>
     </target>
 
-    <target name="code-sniffer">
-        <exec command="vendor/bin/phpcs --standard=PSR1 ${phing.dir}/src" escape="false" logoutput="true" checkreturn="true"/>
+    <target name="test.unit" description="Run phpunit">
+        <exec
+                command="bin/phpunit --configuration phpunit.xml --strict --verbose --testsuite 'unit'"
+                passthru="true"
+                checkreturn="true"/>
     </target>
+
+    <target name="test.integration" description="Integration tests">
+        <exec
+                command="bin/phpunit --configuration phpunit.xml --strict --verbose --testsuite 'integration'"
+                passthru="true"
+                checkreturn="true"/>
+    </target>
+
+    <target name="test.syntax" description="Run syntax check">
+        <phplint>
+            <fileset dir="${project.basedir}">
+                <include name="**/*.php"/>
+                <exclude name="vendor/**/*.php"/>
+            </fileset>
+        </phplint>
+    </target>
+
+    <target name="sonar.unit" description="Run phpunit">
+        <exec
+                command="bin/phpunit --configuration phpunit.xml --testsuite 'unit' --log-junit reports/phpunit.xml --coverage-clover reports/phpunit.coverage.xml"
+                passthru="true"
+                checkreturn="true"/>
+    </target>
+
+
 </project>

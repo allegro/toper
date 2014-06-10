@@ -17,17 +17,12 @@
          bootstrap="./vendor/autoload.php">
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>./tests</directory>
+        <testsuite name="unit">
+            <directory>tests/unit/</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/integration/</directory>
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist>
-            <directory>./tests</directory>
-            <exclude>
-                <directory>./tests</directory>
-            </exclude>
-        </whitelist>
-    </filter>
 </phpunit>

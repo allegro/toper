@@ -13,7 +13,8 @@ use Guzzle\Http\Message\RequestInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GuzzleClientStub implements GuzzleClientInterface{
+class GuzzleClientStub implements GuzzleClientInterface
+{
 
     /**
      * @var array
@@ -147,8 +148,7 @@ class GuzzleClientStub implements GuzzleClientInterface{
         $headers = null,
         $body = null,
         array $options = array()
-    )
-    {
+    ) {
         // TODO: Implement createRequest() method.
     }
 
@@ -336,6 +336,4 @@ class GuzzleClientStub implements GuzzleClientInterface{
     {
         // TODO: Implement setSslVerification() method.
     }
-
-
-} 
+}

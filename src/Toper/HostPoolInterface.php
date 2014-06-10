@@ -2,8 +2,15 @@
 
 namespace Toper;
 
-interface HostPoolInterface {
+interface HostPoolInterface
+{
+    /**
+     * @return string
+     */
     public function getNext();
 
+    /**
+     * @return boolean
+     */
     public function hasNext();
 }

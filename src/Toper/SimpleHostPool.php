@@ -25,7 +25,7 @@ class SimpleHostPool implements HostPoolInterface
     }
 
     /**
-     * @return HostPoolInterface
+     * @return string
      *
      * @throws NextHostException
      */
@@ -38,8 +38,11 @@ class SimpleHostPool implements HostPoolInterface
         return $this->hosts[$this->index++];
     }
 
+    /**
+     * @return bool
+     */
     public function hasNext()
     {
         return isset($this->hosts[$this->index]);
     }
-} 
+}

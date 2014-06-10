@@ -7,6 +7,9 @@ use Toper\Response;
 
 class ServerErrorException extends RequestException
 {
+    /**
+     * @var Response
+     */
     private $response;
 
     /**
@@ -21,4 +24,4 @@ class ServerErrorException extends RequestException
 
         $this->response = $response;
     }
-} 
+}

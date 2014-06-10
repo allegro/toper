@@ -20,4 +20,3 @@ class StaticHostPoolProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(self::HOST_2, $hostPool->getNext());
     }
 }
- 

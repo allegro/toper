@@ -2,3 +2,5 @@ composer.phar
 composer.lock
 .idea/
 /vendor/
+bin
+reports

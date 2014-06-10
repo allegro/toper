@@ -93,8 +93,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $url2 = self::BASE_URL2;
 
         $behaviors = array(
-            'get' => function (GuzzleClientInterface $guzzleClient)
-                use ($url1, $url2, $guzzleRequest1, $guzzleRequest2) {
+            'get' =>
+                function (GuzzleClientInterface $guzzleClient) use ($url1, $url2, $guzzleRequest1, $guzzleRequest2) {
                     if ($guzzleClient->getBaseUrl() == $url1) {
                         return $guzzleRequest1;
                     }
@@ -105,7 +105,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
                     return null;
                 }
-
         );
 
         $guzzleClientStub = new GuzzleClientStub($behaviors);
@@ -137,18 +136,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $url2 = self::BASE_URL2;
 
         $behaviors = array(
-            'get' => function (GuzzleClientInterface $client)
-                use ($guzzleRequest1, $guzzleRequest2, $url1, $url2) {
-                    if($client->getBaseUrl() == $url1) {
-                        return $guzzleRequest1;
-                    }
-
-                    if($client->getBaseUrl() == $url2) {
-                        return $guzzleRequest2;
-                    }
-
-                    return null;
+            'get' => function (GuzzleClientInterface $client) use ($guzzleRequest1, $guzzleRequest2, $url1, $url2) {
+                if ($client->getBaseUrl() == $url1) {
+                    return $guzzleRequest1;
                 }
+
+                if ($client->getBaseUrl() == $url2) {
+                    return $guzzleRequest2;
+                }
+
+                return null;
+            }
         );
 
         $guzzleClient = new GuzzleClientStub($behaviors);
@@ -175,18 +173,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $url2 = self::BASE_URL2;
 
         $behaviors = array(
-            'get' => function (GuzzleClientInterface $client)
-                use ($guzzleRequest1, $guzzleRequest2, $url1, $url2) {
-                    if($client->getBaseUrl() == $url1) {
-                        return $guzzleRequest1;
-                    }
-
-                    if($client->getBaseUrl() == $url2) {
-                        return $guzzleRequest2;
-                    }
-
-                    return null;
+            'get' => function (GuzzleClientInterface $client) use ($guzzleRequest1, $guzzleRequest2, $url1, $url2) {
+                if ($client->getBaseUrl() == $url1) {
+                    return $guzzleRequest1;
                 }
+
+                if ($client->getBaseUrl() == $url2) {
+                    return $guzzleRequest2;
+                }
+
+                return null;
+            }
         );
 
         $guzzleClient = new GuzzleClientStub($behaviors);
@@ -215,7 +212,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->prepareGuzzleClientMock(
             $guzzleClient1,
-            $guzzleRequest, Request::POST
+            $guzzleRequest,
+            Request::POST
         );
 
         $guzzleRequest->expects($this->once())
@@ -324,7 +322,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $binds = array('key' => 'value');
         $instance = $this->createInstance(
-            Request::GET, $binds, $this->createGuzzleClientMock()
+            Request::GET,
+            $binds,
+            $this->createGuzzleClientMock()
         );
 
         $this->assertEquals($binds, $instance->getBinds());
@@ -341,10 +341,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $method,
         array $binds,
         GuzzleClientInterface $guzzleClient
-    )
-    {
+    ) {
         return new Request(
-            $method, self::URL, $binds, $this->hostPool, $guzzleClient
+            $method,
+            self::URL,
+            $binds,
+            $this->hostPool,
+            $guzzleClient
         );
     }
 
@@ -432,8 +435,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         GuzzleRequest $guzzleRequest,
         $method = Request::GET,
         array $binds = array()
-    )
-    {
+    ) {
         $guzzleClient->expects($this->any())
             ->method($method)
             ->with(array(self::URL, $binds))
@@ -448,9 +450,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClientInterface
      */
     private function mockGuzzleClientMethod(
-        \PHPUnit_Framework_MockObject_MockObject $mockObject, $method, \Closure $callback
-    )
-    {
+        \PHPUnit_Framework_MockObject_MockObject $mockObject,
+        $method,
+        \Closure $callback
+    ) {
         $mockObject->expects($this->any())
             ->method($method)
             ->will($this->returnCallback($callback));

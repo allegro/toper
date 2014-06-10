@@ -62,7 +62,8 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function shouldReturn4xxResponse() {
+    public function shouldReturn4xxResponse()
+    {
 
         $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST_404));
         $client = new Client($hostPoolProvider, new GuzzleClientFactory());
@@ -77,7 +78,8 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function shouldReturn3xxResponse() {
+    public function shouldReturn3xxResponse()
+    {
 
         $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST_302));
         $client = new Client($hostPoolProvider, new GuzzleClientFactory());
@@ -170,10 +172,13 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function shouldSendHeaderSetByGuzzleClientOptions() {
+    public function shouldSendHeaderSetByGuzzleClientOptions()
+    {
 
         $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST4, self::HOST1));
-        $client = new Client($hostPoolProvider, new GuzzleClientFactory(
+        $client = new Client(
+            $hostPoolProvider,
+            new GuzzleClientFactory(
                 array(
                     'request.options' => array(
                         'headers' => array(
@@ -191,4 +196,4 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('ok', $response->getBody());
     }
-} 
+}
