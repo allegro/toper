@@ -14,6 +14,7 @@ class StaticHostPoolProvider implements HostPoolProviderInterface
      */
     public function __construct(array $hosts)
     {
+        shuffle($hosts);
         $this->hosts = $hosts;
     }
 
