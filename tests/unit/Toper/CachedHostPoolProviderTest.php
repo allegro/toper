@@ -26,7 +26,7 @@ class CachedHostPoolProviderTest extends \PHPUnit_Framework_TestCase
             100
         );
 
-        $this->assertSame($hostPool, $cachedProvider->get());
+        $this->assertSame($hostPool->toArray(), $cachedProvider->get()->toArray());
     }
 
     /**
@@ -59,7 +59,8 @@ class CachedHostPoolProviderTest extends \PHPUnit_Framework_TestCase
      *
      * @return null
      */
-    public function shouldInvalidateCacheAfterLifeTime() {
+    public function shouldInvalidateCacheAfterLifeTime()
+    {
 
         $hostPool = $this->createHostPool();
         $hostPoolProviderMock = $this->createHostPollProviderMock();
@@ -81,16 +82,6 @@ class CachedHostPoolProviderTest extends \PHPUnit_Framework_TestCase
         $cachedProvider->get();
         $clock->setTime($timestamp + $lifeTime + 1);
         $cachedProvider->get();
-    }
-
-    /**
-     * @test
-     *
-     * @return null
-     */
-    public function shouldReadCacheFromStorage()
-    {
-
     }
 
     /**
@@ -117,4 +108,4 @@ class CachedHostPoolProviderTest extends \PHPUnit_Framework_TestCase
     {
         return $this->getMock('Toper\Storage\StorageInterface');
     }
-} 
+}

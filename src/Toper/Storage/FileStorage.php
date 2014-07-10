@@ -8,12 +8,14 @@ class FileStorage implements StorageInterface
      */
     private $storageDirectory;
 
+    const VERSION = 1;
+
     /**
      * @param string $storageDirectory
      */
     public function __construct($storageDirectory)
     {
-        $this->storageDirectory = $storageDirectory;
+        $this->storageDirectory = $storageDirectory . DIRECTORY_SEPARATOR . "toper";
     }
 
     /**
@@ -106,11 +108,12 @@ class FileStorage implements StorageInterface
         mkdir($this->storageDirectory, 0777, true);
     }
 
+
     /**
      * @return string
      */
     private function getDataFilePath()
     {
-        return $this->storageDirectory . PATH_SEPARATOR . "toper_data";
+        return $this->storageDirectory . DIRECTORY_SEPARATOR . "toper_data_" . self::VERSION;
     }
-} 
+}

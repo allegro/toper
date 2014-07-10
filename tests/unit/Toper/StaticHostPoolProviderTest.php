@@ -16,7 +16,11 @@ class StaticHostPoolProviderTest extends \PHPUnit_Framework_TestCase
         $instance = new StaticHostPoolProvider($hosts);
 
         $hostPool = $instance->get();
-        $this->assertEquals(self::HOST_1, $hostPool->getNext());
-        $this->assertEquals(self::HOST_2, $hostPool->getNext());
+        $nextHost = $hostPool->getNext();
+        $this->assertContains($nextHost, $hosts);
+        unset($hosts[array_search($nextHost, $hosts)]);
+
+        $nextHost = $hostPool->getNext();
+        $this->assertContains($nextHost, $hosts);
     }
 }

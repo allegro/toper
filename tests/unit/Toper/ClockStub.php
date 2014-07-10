@@ -31,4 +31,4 @@ class ClockStub implements ClockInterface
     {
         $this->timestamp = $timestamp;
     }
-} 
+}

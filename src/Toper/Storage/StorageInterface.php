@@ -29,4 +29,4 @@ interface StorageInterface
      * @return null
      */
     public function save();
-} 
+}

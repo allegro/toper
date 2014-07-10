@@ -7,6 +7,8 @@ class CachedHostPoolProvider implements HostPoolProviderInterface
 {
     const INSTANCES_KEY = 'cached_instances';
 
+
+    const CREATE_CACHE_TIME_KEY = 'cached_instances_lifetime';
     /**
      * @var StorageInterface
      */
@@ -28,9 +30,9 @@ class CachedHostPoolProvider implements HostPoolProviderInterface
     private $lifeTime;
 
     /**
-     * @var HostPoolInterface
+     * @var string[]
      */
-    private $hostPool;
+    private $hosts;
 
     /**
      * @var int
@@ -60,11 +62,11 @@ class CachedHostPoolProvider implements HostPoolProviderInterface
      */
     public function get()
     {
-        if ($this->hostPool === null) {
+        if ($this->hosts === null) {
             $this->readCacheFromStorage();
         }
 
-        if ($this->hostPool === null) {
+        if ($this->hosts === null) {
             $this->buildCache();
         }
 
@@ -72,21 +74,44 @@ class CachedHostPoolProvider implements HostPoolProviderInterface
             $this->buildCache();
         }
 
-        return $this->hostPool;
+        return new SimpleHostPool($this->hosts);
     }
 
-
+    /**
+     * @return null
+     */
     private function buildCache()
     {
+        $this->hosts = array();
+        $hostPool = $this->hostPoolProvider->get();
+        while ($hostPool->hasNext()) {
+            $this->hosts[] = $hostPool->getNext();
+        }
+
         $this->createCacheTime = $this->clock->getTime();
-        $this->hostPool = $this->hostPoolProvider->get();
+        $this->writeCacheToStorage();
     }
 
+    /**
+     * @return null
+     */
     private function readCacheFromStorage()
     {
         if ($this->storage->exists(self::INSTANCES_KEY)) {
-            $instances = unserialize($this->storage->get(self::INSTANCES_KEY));
-            return $this->storage->get(self::INSTANCES_KEY);
+            $this->hosts = $this->storage->get(self::INSTANCES_KEY);
+            $this->createCacheTime = $this->storage->get(self::CREATE_CACHE_TIME_KEY);
         }
+
+        return null;
+    }
+
+    /**
+     * @return null
+     */
+    private function writeCacheToStorage()
+    {
+        $this->storage->set(self::INSTANCES_KEY, $this->hosts);
+        $this->storage->set(self::CREATE_CACHE_TIME_KEY, $this->createCacheTime);
+        $this->storage->save();
     }
 }
