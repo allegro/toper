@@ -1,9 +1,9 @@
 Toper
 =====
 
-Toper is a PHP Rest client based on popular Guzzle Rest Client. It base responsibility is to perform tasks connected with load balancing and fault tolerance.
+Toper is a PHP Rest client based on popular Guzzle Rest Client. It base responsibility is to perform tasks connected with a load balancing and a fault tolerance.
 
-Many modern web application to keep up with huge traffic needs to connect to not one backend machine, but often to several identical machines. Toper alwes you to implement this very fast and simply. Main goal of Toper is to watch service instances and if any of them failed Toper will switch to other one.
+Many modern web applications to keep up with a huge traffic needs to connect to not one backend machine, but often to several identical machines. Toper alwes you to implement this very fast and simply. The main goal of Toper is to watch service instances and if any of them failed Toper will switch to other one.
 
 Features
 --------
@@ -29,7 +29,7 @@ Edit your composer.json file and add Toper to require section:
 
 Quick start
 -----------
-Here is example how create request by Toper. In this case Toper is configured to use multiple destinations to protect against breakdown if any of them fail.
+Here is example how create a request by Toper. In this case Toper is configured to use multiple destinations to protect against a breakdown if any of them fail.
 ```php
 
 use Toper\GuzzleClientFactory;
