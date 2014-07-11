@@ -3,10 +3,11 @@ Toper
 
 Toper is a PHP Rest client based on popular Guzzle Rest Client. It base responsibility is to perform tasks connected with a load balancing and a fault tolerance.
 
-Many modern web applications to keep up with a huge traffic needs to connect to not one backend machine, but often to several identical machines. Toper alwes you to implement this very fast and simply. The main goal of Toper is to watch service instances and if any of them failed Toper will switch to other one.
+Many modern web applications to keep up with a huge traffic needs to connect to not one backend machine, but often to several identical machines. Toper allows you to implement this very fast and simply. The main goal of Toper is to watch service instances and if any of them failed Toper will switch to other one.
 
 Features
 --------
+
 * Round robin
 * Fault tolerance
 
