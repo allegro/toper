@@ -45,4 +45,14 @@ class SimpleHostPool implements HostPoolInterface
     {
         return isset($this->hosts[$this->index]);
     }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->hosts;
+    }
+
+
 }
