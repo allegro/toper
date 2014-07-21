@@ -13,4 +13,9 @@ interface HostPoolInterface
      * @return boolean
      */
     public function hasNext();
+
+    /**
+     * @return array
+     */
+    public function toArray();
 }
