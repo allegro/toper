@@ -53,6 +53,4 @@ class SimpleHostPool implements HostPoolInterface
     {
         return $this->hosts;
     }
-
-
 }
