@@ -1,6 +1,7 @@
 <?php
 namespace Toper;
 
+use Toper\Storage\FileStorage;
 use Toper\Storage\StorageInterface;
 
 class CachedHostPoolProviderTest extends \PHPUnit_Framework_TestCase
@@ -26,7 +27,8 @@ class CachedHostPoolProviderTest extends \PHPUnit_Framework_TestCase
             100
         );
 
-        $this->assertSame($hostPool->toArray(), $cachedProvider->get()->toArray());
+        $providedHostPool = $cachedProvider->get();
+        $this->assertSame($hostPool->toArray(), $providedHostPool->toArray());
     }
 
     /**
@@ -85,11 +87,95 @@ class CachedHostPoolProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     *
+     * @return null
+     */
+    public function shouldReadCacheFromStorage()
+    {
+        $instancesFromStorage = array("localhost.com");
+        $hostPoolProviderMock = $this->createHostPollProviderMock();
+        $hostPoolProviderMock->expects($this->never())
+            ->method('get');
+
+        $storage = $this->createStorageMock();
+        $storage->expects($this->any())
+            ->method('get')
+            ->will(
+                $this->returnValueMap(
+                    array(
+                    array(CachedHostPoolProvider::INSTANCES_KEY, $instancesFromStorage),
+                    array(CachedHostPoolProvider::CREATE_CACHE_TIME_KEY, time())
+                    )
+                )
+            );
+
+        $storage->expects($this->any())
+            ->method('exists')
+            ->with(CachedHostPoolProvider::INSTANCES_KEY)
+            ->will($this->returnValue(true));
+
+        $cachedProvider = new CachedHostPoolProvider(
+            $hostPoolProviderMock,
+            $storage,
+            new ClockStub(12354),
+            100
+        );
+
+        $providedHostPool = $cachedProvider->get();
+        $this->assertSame($instancesFromStorage, $providedHostPool->toArray());
+    }
+
+    /**
+     * @test
+     *
+     * @return null
+     */
+    public function shouldReturnInstancesFromNativeProviderCacheFromStorageIsOutdated()
+    {
+        $lifeTime = 100;
+        $hostPool = $this->createHostPool();
+
+        $instancesFromStorage = array("localhost.com");
+        $hostPoolProviderMock = $this->createHostPollProviderMock();
+        $hostPoolProviderMock->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($hostPool));
+
+        $storage = $this->createStorageMock();
+        $storage->expects($this->any())
+            ->method('get')
+            ->will(
+                $this->returnValueMap(
+                    array(
+                        array(CachedHostPoolProvider::INSTANCES_KEY, $instancesFromStorage),
+                        array(CachedHostPoolProvider::CREATE_CACHE_TIME_KEY, time() - $lifeTime - 2)
+                    )
+                )
+            );
+
+        $storage->expects($this->any())
+            ->method('exists')
+            ->with(CachedHostPoolProvider::INSTANCES_KEY)
+            ->will($this->returnValue(true));
+
+        $cachedProvider = new CachedHostPoolProvider(
+            $hostPoolProviderMock,
+            $storage,
+            new ClockStub(time()),
+            $lifeTime
+        );
+
+        $providedHostPool = $cachedProvider->get();
+        $this->assertSame($hostPool->toArray(), $providedHostPool->toArray());
+    }
+
+    /**
      * @return SimpleHostPool
      */
     private function createHostPool()
     {
-        $hosts = array();
+        $hosts = array("host.com.pl");
         return new SimpleHostPool($hosts);
     }
 

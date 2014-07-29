@@ -2,6 +2,8 @@
 
 namespace Toper;
 
+use Toper\Storage\FileStorage;
+
 class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
 {
     const HOST1 = "http://localhost:7820";
@@ -192,6 +194,31 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $request = $client->post("/should_be_post_application_json");
         $request->setBody("data");
 
+        $response = $request->send();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCallByGetMethodUsingCachedHostPoolProvider()
+    {
+        $hostPoolProvider = new CachedHostPoolProvider(
+            new StaticHostPoolProvider(array(self::HOST1)),
+            new FileStorage(sys_get_temp_dir()),
+            new Clock(),
+            10
+        );
+
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory());
+
+        $request = $client->get("/request");
+        $response = $request->send();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+
+        $request = $client->get("/request");
         $response = $request->send();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('ok', $response->getBody());
