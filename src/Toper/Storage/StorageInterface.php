@@ -6,7 +6,7 @@ interface StorageInterface
     /**
      * @param string $key
      * @param mixed  $value
-     *mixed
+     *
      * @return null
      */
     public function set($key, $value);
