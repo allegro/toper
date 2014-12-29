@@ -11,7 +11,7 @@ Features
 * Round robin
 * Fault tolerance
 
-Installing via Composer 
+Installing via Composer
 -----------------------
 
 The recomended way to intall toper is using Composer
@@ -38,7 +38,7 @@ use Toper\StaticHostPoolProvider;
 
 $hostPollProvider = new StaticHostPoolProvider(
     array("http://service1.com", "http://service2.com")
-); 
+);
 $guzzleClientFactory = new GuzzleClientFactory();
 
 $toper = new \Toper\Client($hostPollProvider, $guzzleClientFactory);
@@ -50,4 +50,33 @@ if($response->getStatusCode() == 200) {
 }
 ```
 
+Host Cache
+----------
 
+If you are using an external service to provide actually enabled applications hosts then maybe it is not efficiently to call every time this service before make a request to the target service.
+Better solution is to cache result from this service for some period time. That why we provide ChaceHostPoolProvider which can decorate your base pool provider and cache a result for configured time.
+
+```php
+<?php
+
+class MyHostPoolProvider implements \Toper\HostPoolProviderInterface
+{
+    /**
+     * @return \Toper\HostPoolInterface
+     */
+    public function get()
+    {
+        //fetch hosts code
+    }
+}
+
+$storage = new \Toper\Storage\FileStorage(
+    "/tmp/"
+);
+
+$cacheLifeTime = 5; //time in seconds
+
+$cachedHostProvider = new \Toper\CachedHostPoolProvider(
+    new MyHostPoolProvider(), $storage, new \Toper\Clock(), $cacheLifeTime
+
+```
