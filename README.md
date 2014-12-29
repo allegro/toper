@@ -53,7 +53,7 @@ if($response->getStatusCode() == 200) {
 Host Cache
 ----------
 
-If you are using an external service to provide actually enabled applications hosts then maybe is not efficiently to call every time this service before make a request to the target service.
+If you are using an external service to provide actually enabled applications hosts then maybe it is not efficiently to call every time this service before make a request to the target service.
 Better solution is to cache result from this service for some period time. That why we provide ChaceHostPoolProvider which can decorate your base pool provider and cache a result for configured time.
 
 ```php
