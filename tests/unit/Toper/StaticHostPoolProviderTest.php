@@ -16,12 +16,13 @@ class StaticHostPoolProviderTest extends \PHPUnit_Framework_TestCase
         $instance = new StaticHostPoolProvider($hosts);
 
         $hostPool = $instance->get();
+
         $this->assertHostsArrays($hosts, $hostPool->toArray());
     }
 
     /**
-     * @param string $hosts1
-     * @param string $hosts2
+     * @param string[] $hosts1
+     * @param string[] $hosts2
      */
     private function assertHostsArrays($hosts1, $hosts2)
     {

@@ -47,7 +47,7 @@ class SimpleHostPool implements HostPoolInterface
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function toArray()
     {
