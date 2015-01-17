@@ -63,6 +63,30 @@ class SimpleHostPoolTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function shouldHaveDefaultName()
+    {
+
+        $hostPool = $this->createInstance(
+            array(self::HOST_1)
+        );
+
+        $this->assertEquals("default", $hostPool->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldHaveSettName()
+    {
+        $name = "some name";
+        $hostPool = new SimpleHostPool(array(), $name);
+
+        $this->assertEquals($name, $hostPool->getName());
+    }
+
+    /**
      * @param array $hosts
      *
      * @return SimpleHostPool

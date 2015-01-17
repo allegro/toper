@@ -7,6 +7,7 @@ use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
 use Toper\Exception\ConnectionErrorException;
+use Toper\Exception\EmptyHostPoolException;
 use Toper\Exception\ServerErrorException;
 use \Guzzle\Http\Message\Request as GuzzleRequest;
 use Guzzle\Http\ClientInterface as GuzzleClientInterface;
@@ -146,6 +147,10 @@ class Request
             } catch (CurlException $e) {
                 $exception = new ConnectionErrorException($e->getMessage(), $e->getCode(), $e);
             }
+        }
+
+        if ($exception == null) {
+            throw new EmptyHostPoolException(sprintf("Empty host pool: %s", $this->hostPool->getName()));
         }
 
         throw $exception;
