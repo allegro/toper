@@ -17,11 +17,18 @@ class SimpleHostPool implements HostPoolInterface
     private $index = 0;
 
     /**
-     * @param array $hosts
+     * @var string
      */
-    public function __construct(array $hosts)
+    private $name;
+
+    /**
+     * @param array  $hosts
+     * @param string $name
+     */
+    public function __construct(array $hosts, $name = "default")
     {
         $this->hosts = $hosts;
+        $this->name = $name;
     }
 
     /**
@@ -52,5 +59,13 @@ class SimpleHostPool implements HostPoolInterface
     public function toArray()
     {
         return $this->hosts;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

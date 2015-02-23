@@ -197,6 +197,25 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $instance->send();
     }
 
+
+    /**
+     * @test
+     */
+    public function shouldThrowExceptionIfEmptyHostPool()
+    {
+        $behaviors = array();
+
+        $guzzleClient = new GuzzleClientStub($behaviors);
+
+        $this->hostPool = new SimpleHostPool(array());
+
+        $instance = $this->createInstance(Request::GET, array(), $guzzleClient);
+
+        $this->setExpectedException('Toper\Exception\EmptyHostPoolException');
+
+        $instance->send();
+    }
+
     /**
      * @test
      */
