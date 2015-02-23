@@ -18,4 +18,9 @@ interface HostPoolInterface
      * @return string[]
      */
     public function toArray();
+
+    /**
+     * @return string
+     */
+    public function getName();
 }
