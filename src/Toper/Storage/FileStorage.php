@@ -74,7 +74,8 @@ class FileStorage implements StorageInterface
 
         file_put_contents(
             $this->getDataFilePath(),
-            serialize($this->data)
+            serialize($this->data),
+            LOCK_EX
         );
     }
 
