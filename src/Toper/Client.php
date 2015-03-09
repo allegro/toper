@@ -15,7 +15,7 @@ class Client implements ClientInterface
     private $guzzleClientFactory;
 
     /**
-     * @param HostPoolProviderInterface $hostPoolProvider
+     * @param HostPoolProviderInterface    $hostPoolProvider
      * @param GuzzleClientFactoryInterface $guzzleClientFactory
      */
     public function __construct(
@@ -28,8 +28,8 @@ class Client implements ClientInterface
 
     /**
      * @param string $url
+     * @param array  $binds
      *
-     * @param array $binds
      * @return Request
      */
     public function get($url, array $binds = array())
@@ -45,8 +45,8 @@ class Client implements ClientInterface
 
     /**
      * @param string $url
+     * @param array  $binds
      *
-     * @param array $binds
      * @return Request
      */
     public function post($url, array $binds = array())
@@ -63,14 +63,31 @@ class Client implements ClientInterface
 
     /**
      * @param string $url
+     * @param array  $binds
      *
-     * @param array $binds
      * @return Request
      */
     public function put($url, array $binds = array())
     {
         return new Request(
             Request::PUT,
+            $url,
+            $binds,
+            $this->hostPoolProvider->get(),
+            $this->guzzleClientFactory->create()
+        );
+    }
+
+    /**
+     * @param string $url
+     * @param array  $binds
+     *
+     * @return Request
+     */
+    public function delete($url, array $binds = array())
+    {
+        return new Request(
+            Request::DELETE,
             $url,
             $binds,
             $this->hostPoolProvider->get(),

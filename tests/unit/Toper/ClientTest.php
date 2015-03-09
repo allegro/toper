@@ -124,6 +124,21 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($binds, $request->getBinds());
     }
 
+    /**
+     * @test
+     */
+    public function deleteShouldCreateDeleteRequestWithBinds()
+    {
+        $url = "/test";
+        $binds = array('key' => 'value');
+        $client = $this->createClient();
+        $request = $client->delete($url, $binds);
+
+        $this->assertEquals($url, $request->getUrl());
+        $this->assertEquals($this->hostPool, $request->getHostPool());
+        $this->assertEquals(Request::DELETE, $request->getMethod());
+        $this->assertEquals($binds, $request->getBinds());
+    }
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject | HostPoolProviderInterface
