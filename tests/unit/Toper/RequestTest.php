@@ -275,6 +275,28 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function postMethodShouldBeAbleToPutBody()
+    {
+        $body = "some test body";
+        $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
+        $guzzleRequest = $this->createGuzzleEntityEnclosingRequest($guzzleResponse);
+        $guzzleClient = $this->createGuzzleClientMock();
+        $this->prepareGuzzleClientMock($guzzleClient, $guzzleRequest, Request::DELETE);
+
+        $guzzleRequest->expects($this->once())
+            ->method('setBody')
+            ->with($body);
+
+        $clientTestInstance = $this->createInstance(Request::DELETE, array(), $guzzleClient);
+        $clientTestInstance->setBody($body);
+
+        $clientTestInstance->send();
+    }
+
+    /**
+     * @test
+     */
     public function shouldReturnResponseIfGuzzleThrowsClientErrorResponseException()
     {
         $responseErrorCode = 404;
