@@ -2,23 +2,22 @@
 
 namespace Toper;
 
+use Guzzle\Http\ClientInterface as GuzzleClientInterface;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Guzzle\Http\Exception\CurlException;
 use Guzzle\Http\Exception\ServerErrorResponseException;
 use Guzzle\Http\Message\EntityEnclosingRequest;
+use Guzzle\Http\Message\Request as GuzzleRequest;
 use Toper\Exception\ConnectionErrorException;
 use Toper\Exception\EmptyHostPoolException;
 use Toper\Exception\ServerErrorException;
-use \Guzzle\Http\Message\Request as GuzzleRequest;
-use Guzzle\Http\ClientInterface as GuzzleClientInterface;
 
 class Request
 {
     const GET = "get";
-
     const POST = "post";
-
     const PUT = "put";
+    const DELETE = "delete";
 
     /**
      * @var HostPoolInterface
@@ -56,10 +55,10 @@ class Request
     private $binds;
 
     /**
-     * @param string $method
-     * @param string $url
-     * @param array $binds
-     * @param HostPoolInterface $hostPool
+     * @param string                $method
+     * @param string                $url
+     * @param array                 $binds
+     * @param HostPoolInterface     $hostPool
      * @param GuzzleClientInterface $guzzleClient
      */
     public function __construct(
@@ -110,9 +109,10 @@ class Request
     }
 
     /**
-     * @throws Exception\ServerErrorException
-     *
      * @return Response
+     * @throws ConnectionErrorException
+     * @throws EmptyHostPoolException
+     * @throws ServerErrorException
      */
     public function send()
     {
@@ -166,7 +166,7 @@ class Request
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function addQueryParam($name, $value)
     {
