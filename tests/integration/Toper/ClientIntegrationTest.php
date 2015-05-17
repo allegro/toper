@@ -174,6 +174,22 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function deleteMethodShouldBeRequested()
+    {
+        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST4));
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory());
+
+        $request = $client->delete('/should_be_delete');
+        $request->setBody('some_data_to_delete');
+
+        $response = $request->send();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+    }
+
+    /**
+     * @test
+     */
     public function shouldSendHeaderSetByGuzzleClientOptions()
     {
 

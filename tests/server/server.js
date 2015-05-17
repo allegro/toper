@@ -1,8 +1,7 @@
 var http = require('http');
 var url = require('url');
-console.log("http://localhost:7900/should_be_post");
-console.log("http://localhost:7900/should_be_put");
 
+console.log("start server on port: 7900");
 http.createServer(function (req, res) {
     console.log(req.url);
     var data = "";
@@ -54,6 +53,22 @@ http.createServer(function (req, res) {
         return;
     }
 
+    if (req.url == '/should_be_delete') {
+        req.on("data", function (chunk) {
+            data += chunk;
+        });
+
+        req.on("end", function () {
+            if (req.method == 'DELETE' && data == "some_data_to_delete") {
+                res.writeHead(200);
+                res.end("ok");
+            } else {
+                res.writeHead(400);
+                res.end("bad request");
+            }
+        });
+        return;
+    }
 
     if (req.url == '/should_be_post_application_json') {
         if (req.method == 'POST' && req.headers['content-type'] === 'application/json') {
@@ -92,7 +107,7 @@ codes = {
 };
 
 for (var code in codes) {
-    console.log("start server on port: " + codes[code].port);
+    console.log("start server on port: " + codes[code].port + "(response code: " + code + ")");
     createPortServer(code);
 }
 
