@@ -55,6 +55,11 @@ class Request
     private $binds;
 
     /**
+     * @var array
+     */
+    private $headers = array();
+
+    /**
      * @param string                $method
      * @param string                $url
      * @param array                 $binds
@@ -69,12 +74,11 @@ class Request
         GuzzleClientInterface $guzzleClient
     ) {
         $this->method = $method;
-        $this->hostPool = $hostPool;
         $this->url = $url;
-        $this->guzzleClient = $guzzleClient;
         $this->binds = $binds;
+        $this->hostPool = $hostPool;
+        $this->guzzleClient = $guzzleClient;
     }
-
 
     /**
      * @return string
@@ -126,7 +130,7 @@ class Request
                 $guzzleRequest = $this->guzzleClient->{$this->method}(
                     array($this->url, $this->binds)
                 );
-
+                $guzzleRequest->addHeaders($this->headers);
                 if ($this->body && $guzzleRequest instanceof EntityEnclosingRequest) {
                     /** @var EntityEnclosingRequest $guzzleRequest */
                     $guzzleRequest->setBody($this->body);
@@ -171,6 +175,26 @@ class Request
     public function addQueryParam($name, $value)
     {
         $this->queryParams[$name] = $value;
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function addHeader($name, $value)
+    {
+        $this->headers[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 
     /**
