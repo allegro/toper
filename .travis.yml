@@ -3,6 +3,6 @@ php:
   - "5.3"
 install:
   - "composer install"
-  - "composer install"
+  - "composer self-update"
   - "nohup node tests/server/server.js &"
 script: "bin/phing test"

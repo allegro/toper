@@ -14,11 +14,11 @@ use Guzzle\Http\QueryString;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
-    const URL = "/test";
+    const URL = '/test';
 
-    const BASE_URL1 = "http://123.123.123.123";
+    const BASE_URL1 = 'http://123.123.123.123';
 
-    const BASE_URL2 = "http://123.123.123.124";
+    const BASE_URL2 = 'http://123.123.123.124';
 
     private $hostPool;
 
@@ -221,7 +221,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldSetPostBodyIfRequestIsPost()
     {
-        $body = "some body";
+        $body = 'some body';
         $guzzleClient1 = $this->createGuzzleClientMock();
         $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
 
@@ -251,7 +251,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldSetBodyIfRequestIsPut()
     {
-        $body = "some body";
+        $body = 'some body';
         $guzzleClient = $this->createGuzzleClientMock();
         $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
 
@@ -277,7 +277,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function postMethodShouldBeAbleToPutBody()
     {
-        $body = "some test body";
+        $body = 'some test body';
         $this->hostPool = new SimpleHostPool(array(self::BASE_URL1));
         $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
         $guzzleRequest = $this->createGuzzleEntityEnclosingRequest($guzzleResponse);
@@ -481,25 +481,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->method($method)
             ->with(array(self::URL, $binds))
             ->will($this->returnValue($guzzleRequest));
-    }
-
-    /**
-     * @param \PHPUnit_Framework_MockObject_MockObject $mockObject
-     * @param string $method
-     * @param \Closure $callback
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject | GuzzleClientInterface
-     */
-    private function mockGuzzleClientMethod(
-        \PHPUnit_Framework_MockObject_MockObject $mockObject,
-        $method,
-        \Closure $callback
-    ) {
-        $mockObject->expects($this->any())
-            ->method($method)
-            ->will($this->returnCallback($callback));
-
-        return $mockObject;
     }
 
     /**
