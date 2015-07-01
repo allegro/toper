@@ -224,9 +224,10 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST4, self::HOST1));
         $client = new Client($hostPoolProvider, new GuzzleClientFactory());
 
-        $request = $client->post('/should_be_post_application_json');
+        $request = $client->post('/should_be_post_with_multi_cache_control_headers');
         $request->setBody('data');
-        $request->addHeader('Content-Type', 'application/json');
+        $request->addHeader('cache-control', 'no-cache');
+        $request->addHeader('cache-control', 'no-store');
 
         $response = $request->send();
         $this->assertEquals(200, $response->getStatusCode());

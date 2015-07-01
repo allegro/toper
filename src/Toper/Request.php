@@ -185,7 +185,7 @@ class Request
      */
     public function addHeader($name, $value)
     {
-        $this->headers[$name] = $value;
+        $this->headers[$name][] = $value;
         return $this;
     }
 

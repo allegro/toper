@@ -81,6 +81,18 @@ http.createServer(function (req, res) {
         return;
     }
 
+    if (req.url == '/should_be_post_with_two_cache_control_headers') {
+        console.log(req.headers);
+        if (req.method == 'POST' && req.headers['cache-control'] === 'no-cache, no-store') {
+            res.writeHead(200);
+            res.end("ok");
+        } else {
+            res.writeHead(400);
+            res.end("bad request");
+        }
+        return;
+    }
+
     if (req.url.match(/^\/should_have_parameter/)) {
         var parts = url.parse(req.url, true);
         if (parts.query.key === "value") {
