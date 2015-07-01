@@ -32,6 +32,7 @@ Quick start
 -----------
 Here is example how create a request by Toper. In this case Toper is configured to use multiple destinations to protect against a breakdown if any of them fail.
 ```php
+<?php
 
 use Toper\GuzzleClientFactory;
 use Toper\StaticHostPoolProvider;
@@ -43,6 +44,7 @@ $guzzleClientFactory = new GuzzleClientFactory();
 
 $toper = new \Toper\Client($hostPollProvider, $guzzleClientFactory);
 $response = $toper->get('/')
+    ->addHeader('cache-control', 'no-cache')
     ->send();
 
 if($response->getStatusCode() == 200) {
