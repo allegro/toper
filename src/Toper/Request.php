@@ -106,10 +106,13 @@ class Request
 
     /**
      * @param string $body
+     *
+     * @return $this
      */
     public function setBody($body)
     {
         $this->body = $body;
+        return $this;
     }
 
     /**
@@ -171,10 +174,13 @@ class Request
     /**
      * @param string $name
      * @param mixed  $value
+     *
+     * @return $this
      */
     public function addQueryParam($name, $value)
     {
         $this->queryParams[$name] = $value;
+        return $this;
     }
 
     /**
