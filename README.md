@@ -82,3 +82,8 @@ $cachedHostProvider = new \Toper\CachedHostPoolProvider(
     new MyHostPoolProvider(), $storage, new \Toper\Clock(), $cacheLifeTime
 
 ```
+
+License
+=======
+
+Toper is published under Apache License 2.0.
