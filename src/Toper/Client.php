@@ -60,6 +60,22 @@ class Client implements ClientInterface
         );
     }
 
+    /**
+     * @param string $url
+     * @param array  $binds
+     *
+     * @return Request
+     */
+    public function patch($url, array $binds = array())
+    {
+        return new Request(
+            Request::PATCH,
+            $url,
+            $binds,
+            $this->hostPoolProvider->get(),
+            $this->guzzleClientFactory->create()
+        );
+    }
 
     /**
      * @param string $url

@@ -5,4 +5,9 @@ install:
   - "composer install"
   - "composer self-update"
   - "nohup node tests/server/server.js &"
+matrix:
+  include:
+    - php: 5.3
+      dist: precise
 script: "bin/phing test"
+
