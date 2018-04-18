@@ -1,4 +1,7 @@
 #Changelog:
+##0.4.2
+- Support for PATCH Request
+
 ##0.4.1
 - Fluent interface in Request
 

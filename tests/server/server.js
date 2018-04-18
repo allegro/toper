@@ -35,6 +35,24 @@ http.createServer(function (req, res) {
         return;
     }
 
+    if (req.url == '/should_be_patch') {
+
+        req.on("data", function (chunk) {
+            data += chunk;
+        });
+
+        req.on("end", function () {
+            if (req.method == 'PATCH' && data == "data") {
+                res.writeHead(200);
+                res.end("ok");
+            } else {
+                res.writeHead(400);
+                res.end("bad request");
+            }
+        });
+        return;
+    }
+    
     if (req.url == '/should_be_put') {
 
         req.on("data", function (chunk) {

@@ -154,6 +154,21 @@ class ClientIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ok', $response->getBody());
     }
 
+    /**
+     * @test
+     */
+    public function shouldSendPatchRequest()
+    {
+        $hostPoolProvider = new StaticHostPoolProvider(array(self::HOST4, self::HOST1));
+        $client = new Client($hostPoolProvider, new GuzzleClientFactory());
+
+        $request = $client->patch('/should_be_patch');
+        $request->setBody('data');
+
+        $response = $request->send();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('ok', $response->getBody());
+    }
 
     /**
      * @test

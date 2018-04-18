@@ -68,6 +68,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Request::POST, $request->getMethod());
     }
 
+    /**
+     * @test
+     */
+    public function shouldPatchCreatePostRequest()
+    {
+        $url = "/test";
+        $client = $this->createClient();
+        $request = $client->patch($url);
+
+        $this->assertEquals($url, $request->getUrl());
+        $this->assertEquals($this->hostPool, $request->getHostPool());
+        $this->assertEquals(Request::PATCH, $request->getMethod());
+    }
 
     /**
      * @test
@@ -110,6 +123,18 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($binds, $request->getBinds());
     }
 
+    /**
+     * @test
+     */
+    public function shouldPatchCreatePostRequestWithBinds()
+    {
+        $url = "/test";
+        $binds = array('key' => 'value');
+        $client = $this->createClient();
+        $request = $client->patch($url, $binds);
+
+        $this->assertEquals($binds, $request->getBinds());
+    }
 
     /**
      * @test
