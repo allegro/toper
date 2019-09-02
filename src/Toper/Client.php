@@ -15,15 +15,31 @@ class Client implements ClientInterface
     private $guzzleClientFactory;
 
     /**
-     * @param HostPoolProviderInterface    $hostPoolProvider
-     * @param GuzzleClientFactoryInterface $guzzleClientFactory
+     * @var MetricsInterface
+     */
+    private $metrics;
+
+    /**
+     * @var ProxyDecoratorInterface
+     */
+    private $proxyDecorator;
+
+    /**
+     * @param HostPoolProviderInterface     $hostPoolProvider
+     * @param GuzzleClientFactoryInterface  $guzzleClientFactory
+     * @param MetricsInterface|null         $metrics
+     * @param ProxyDecoratorInterface       $proxyDecorator
      */
     public function __construct(
         HostPoolProviderInterface $hostPoolProvider,
-        GuzzleClientFactoryInterface $guzzleClientFactory
+        GuzzleClientFactoryInterface $guzzleClientFactory,
+        MetricsInterface $metrics = null,
+        ProxyDecoratorInterface $proxyDecorator = null
     ) {
         $this->hostPoolProvider = $hostPoolProvider;
         $this->guzzleClientFactory = $guzzleClientFactory;
+        $this->metrics = $metrics;
+        $this->proxyDecorator = $proxyDecorator;
     }
 
     /**
@@ -39,7 +55,9 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory->create()
+            $this->guzzleClientFactory->create(),
+            $this->metrics,
+            $this->proxyDecorator
         );
     }
 
@@ -56,7 +74,9 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory->create()
+            $this->guzzleClientFactory->create(),
+            $this->metrics,
+            $this->proxyDecorator
         );
     }
 
@@ -73,7 +93,9 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory->create()
+            $this->guzzleClientFactory->create(),
+            $this->metrics,
+            $this->proxyDecorator
         );
     }
 
@@ -90,7 +112,9 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory->create()
+            $this->guzzleClientFactory->create(),
+            $this->metrics,
+            $this->proxyDecorator
         );
     }
 
@@ -107,7 +131,9 @@ class Client implements ClientInterface
             $url,
             $binds,
             $this->hostPoolProvider->get(),
-            $this->guzzleClientFactory->create()
+            $this->guzzleClientFactory->create(),
+            $this->metrics,
+            $this->proxyDecorator
         );
     }
 }
