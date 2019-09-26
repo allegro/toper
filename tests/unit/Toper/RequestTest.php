@@ -56,6 +56,43 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function shouldSendMetricsAndDecorateRequestBeforeSend()
+    {
+        $guzzleClient = $this->createGuzzleClientMock();
+
+        $guzzleResponse = new GuzzleResponse(200, array(), 'ok');
+
+        $guzzleRequest = $this->createGuzzleRequest($guzzleResponse);
+
+        $this->prepareGuzzleClientMock($guzzleClient, $guzzleRequest);
+
+        $this->returnValue($guzzleResponse);
+
+        $metricsInterfaceMock = $this->getMock('Toper\MetricsInterface', array('increment'));
+        $metricsInterfaceMock->expects($this->once())->method('increment');
+
+        $proxyDecoratorInterfaceMock = $this->getMock(
+            'Toper\ProxyDecoratorInterface',
+            array('decorate', 'getBaseUrl')
+        );
+        $proxyDecoratorInterfaceMock->expects($this->once())->method('decorate');
+
+        $instance = $this->createInstance(
+            Request::GET,
+            array(),
+            $guzzleClient,
+            $metricsInterfaceMock,
+            $proxyDecoratorInterfaceMock
+        );
+        $response = $instance->send();
+
+        $this->assertEquals($guzzleResponse->getStatusCode(), $response->getStatusCode());
+        $this->assertEquals($guzzleResponse->getBody(true), $response->getBody());
+    }
+
+    /**
+     * @test
+     */
     public function shouldSendRequestWithBinds()
     {
         $guzzleClient = $this->createGuzzleClientMock();
@@ -376,19 +413,26 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      * @param array $binds
      * @param GuzzleClientInterface $guzzleClient
      *
+     * @param null $metrics
+     * @param null $proxyDecorator
      * @return Request
      */
     private function createInstance(
         $method,
         array $binds,
-        GuzzleClientInterface $guzzleClient
+        GuzzleClientInterface $guzzleClient,
+        $metrics = null,
+        $proxyDecorator = null
     ) {
+
         return new Request(
             $method,
             self::URL,
             $binds,
             $this->hostPool,
-            $guzzleClient
+            $guzzleClient,
+            $metrics,
+            $proxyDecorator
         );
     }
 
